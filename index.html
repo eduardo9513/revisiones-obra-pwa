@@ -1,0 +1,4024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- Optimización para apps móviles -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>App de Revisiones de Obra v10 (Mejoras)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+
+    <style>
+      .btn-icon {
+        padding: 0.3rem 0.5rem;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        line-height: 1;
+      }
+      .btn-icon svg {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0;
+      }
+      .download-section-button {
+        padding: 0.25rem 0.45rem;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        line-height: 1;
+      }
+      .theme-toggle-btn {
+        position: fixed;
+        top: 0.75rem;
+        left: 0.75rem;
+        z-index: 50;
+        padding: 0.3rem 0.6rem;
+        border-radius: 9999px;
+        background: #0f172a;
+        color: #f9fafb;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.6);
+      }
+      .dark-mode body,
+      .dark-mode main,
+      .dark-mode .bg-slate-100,
+      .dark-mode .bg-white {
+        background-color: #020617 !important;
+        color: #e5e7eb !important;
+      }
+      .dark-mode .text-slate-900 {
+        color: #e5e7eb !important;
+      }
+      .dark-mode .border-slate-200 {
+        border-color: #1f2937 !important;
+      }
+
+      /* Color de fondo del encabezado (barra superior)  
+         Se utiliza un tono azul profundo que armoniza con los nuevos  
+         botones principales. Este estilo aplica si existe un elemento  
+         <header> en la página. */
+      header {
+        background-color: #1e40af;
+        color: #f8fafc;
+      }
+    </style>
+
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <!-- Botón de cambio de tema oscuro/claro -->
+    <button id="theme-toggle" class="theme-toggle-btn" type="button" title="Modo oscuro/claro">🌓</button>
+
+    <!-- Encabezado principal -->
+    <header class="bg-slate-800 text-white shadow-lg p-4 sticky top-0 z-50">
+        <div class="container mx-auto max-w-7xl flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Aplicación de Revisiones de Obra</h1>
+            <span id="cloud-status" class="font-mono text-sm text-slate-400 hidden sm:block">Conectando...</span>
+        </div>
+    </header>
+
+    <!-- Contenedor principal de vistas -->
+    <main class="container mx-auto p-4 max-w-7xl">
+
+        <!-- Vista 0: Inicio (Home) -->
+<div id="view-0-home" class="view-container bg-white p-6 md:p-10 rounded-xl shadow-lg mt-6">
+            <h2 class="text-2xl font-semibold mb-2 text-slate-900 text-center">Revisiones de Obra</h2>
+            <p class="text-sm text-slate-500 mb-8 text-center">
+                Selecciona una opción para comenzar.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button id="btn-home-start-review" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-6 px-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-lg">
+                    <span class="text-3xl mb-2">🔍</span>
+                    <span>Iniciar una revisión</span>
+                </button>
+                <button id="btn-home-open-summary" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-6 px-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-lg">
+                    <span class="text-3xl mb-2">📊</span>
+                    <span>Ver resumen de la obra</span>
+                </button>
+            </div>
+        </div>
+
+
+
+        
+        <!-- Vista 1: Datos del Departamento -->
+        <div id="view-1-config" class="view-container bg-white p-6 md:p-8 rounded-xl shadow-lg mt-6">
+            <h2 class="text-2xl font-semibold mb-6 text-slate-900">1. Datos del Departamento</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="dept-number" class="form-label">N° de Departamento</label>
+                    <input type="text" id="dept-number" class="form-input max-w-xs" placeholder="Ej: 202, 1401">
+                </div>
+                <button id="next-to-view-2" class="btn btn-primary">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Vista 2: Configuración de Revisión -->
+        <div id="view-2-setup" class="view-container view-hidden bg-white p-6 md:p-8 rounded-xl shadow-lg mt-6">
+            <h2 class="text-2xl font-semibold mb-6 text-slate-900">2. Configuración de Revisión</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="pdf-upload" class="form-label">A. Cargar Plano (PDF)</label>
+                    <input type="file" id="pdf-upload" accept="application/pdf" class="file-input"/>
+                </div>
+                <div>
+                    <label for="review-date" class="form-label">B. Fecha de Revisión</label>
+                    <input type="date" id="review-date" class="form-input">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="review-type" class="form-label">C. Tipo de Revisión</label>
+                    <select id="review-type" class="form-select">
+                        <option value="" disabled selected>Seleccione un tipo</option>
+                        <option value="R1">R1 (Primera Revisión)</option>
+                        <option value="R2">R2 (Segunda Revisión)</option>
+                        <option value="RF">RF (Revisión Final)</option>
+                        <option value="LO">LO (Levantamiento de Obs.)</option>
+                    </select>
+                </div>
+                <div id="lo-subtype-container" class="hidden md:col-span-2">
+                     <label for="lo-subtype" class="form-label">D. Levantamiento corresponde a:</label>
+                    <select id="lo-subtype" class="form-select">
+                        <option value="R1">R1</option>
+                        <option value="R2">R2</option>
+                        <option value="RF">RF</option>
+                    </select>
+                </div>
+            </div>
+            <button id="start-review" class="btn btn-success mt-6" disabled>Iniciar Revisión</button>
+        </div>
+
+        <!-- Vista 3: Revisión en Plano -->
+        <div id="view-3-review" class="view-container view-hidden mt-6">
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+                <div class="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-slate-900">3. Revisión en Plano</h2>
+                        <p class="text-sm text-slate-600">
+                            Depto: <span id="info-dept" class="font-bold text-slate-800">---</span> | 
+                            Fecha: <span id="info-date" class="font-bold text-slate-800">---</span> | 
+                            Revisión: <span id="info-review-type" class="font-bold text-slate-800">---</span>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center space-x-2 bg-slate-100 p-2 rounded-full shadow-sm">
+                        <button id="prev-page" class="p-2 text-slate-600 bg-white rounded-full hover:bg-slate-200 disabled:opacity-50 transition-colors" title="Página Anterior">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <span class="text-sm font-medium text-slate-700 px-2">Pág <span id="page-num">0</span> / <span id="page-count">0</span></span>
+                        <button id="next-page" class="p-2 text-slate-600 bg-white rounded-full hover:bg-slate-200 disabled:opacity-50 transition-colors" title="Página Siguiente">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <span class="border-l border-slate-300 h-6 mx-2"></span>
+                        <button id="zoom-out" class="p-2 text-slate-600 bg-white rounded-full hover:bg-slate-200 transition-colors" title="Disminuir Zoom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <span id="zoom-percent" class="text-sm font-medium text-slate-700 w-12 text-center">100%</span>
+                        <button id="zoom-in" class="p-2 text-slate-600 bg-white rounded-full hover:bg-slate-200 transition-colors" title="Aumentar Zoom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="canvas-wrapper" class="canvas-container">
+                    <canvas id="pdf-canvas"></canvas>
+                    <canvas id="draw-canvas"></canvas>
+                </div>
+                
+                <div class="mt-4 flex flex-wrap gap-4">
+                    <button id="finish-review" class="btn btn-danger">Finalizar Revisión</button>
+                    <button id="download-pdf" class="btn btn-secondary">Descargar Plano (PDF)</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista 4: Pruebas generales y revisión -->
+        <div id="view-5-pruebas" class="view-container view-hidden mt-6 bg-white p-6 md:p-8 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-semibold mb-6 text-slate-900">4. PRUEBAS GENERALES Y REVISIÓN</h2>
+            <div id="pruebas-generales-list" class="space-y-3">
+                </div>
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button id="back-to-review-from-pruebas" class="btn btn-secondary">Volver al Plano</button>
+                <button id="finish-pruebas" class="btn btn-danger">Finalizar Pruebas y Ver Resumen</button>
+            </div>
+        </div>
+
+        <!-- Vista 5: Resumen de revisión -->
+        <div id="view-4-summary" class="view-container view-hidden mt-6 bg-white p-6 md:p-8 rounded-xl shadow-lg">
+            <div id="pdf-summary-content">
+                <h2 class="text-2xl font-semibold mb-6 text-slate-900">5. Resumen de Revisión</h2>
+                
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 text-center">
+                    <div class="bg-slate-100 p-4 rounded-xl shadow-sm">
+                        <span class="block text-sm text-slate-600">Departamento</span>
+                        <span id="summary-dept" class="text-xl font-bold text-slate-800">---</span>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-xl shadow-sm">
+                        <span class="block text-sm text-slate-600">Fecha</span>
+                        <span id="summary-date" class="text-xl font-bold text-slate-800">---</span>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-xl shadow-sm">
+                        <span class="block text-sm text-slate-600">Tipo Revisión</span>
+                        <span id="summary-review-type" class="text-xl font-bold text-slate-800">---</span>
+                    </div>
+                    <div class="bg-blue-100 p-4 rounded-xl shadow-sm text-blue-800">
+                        <span class="block text-sm">Total Obs.</span>
+                        <span id="summary-total-obs" class="text-3xl font-bold">0</span>
+                    </div>
+                    <div class="bg-green-100 p-4 rounded-xl shadow-sm text-green-800">
+                        <span class="block text-sm">Total Lev.</span>
+                        <span id="summary-total-levs" class="text-3xl font-bold">0</span>
+                    </div>
+                </div>
+
+                <div id="summary-details" class="space-y-8">
+                    
+                    <div id="summary-obs-content">
+                        <div class="flex items-center justify-between mt-4 mb-3 gap-3">
+                            <h3 class="text-xl font-semibold text-slate-900">Cuadro Resumen de Observaciones</h3>
+                            <button id="download-summary-obs-img" class="btn btn-primary text-xs px-3 py-1">
+                                Descargar
+                            </button>
+                        </div>
+                        <div id="summary-obs-details" class="text-sm overflow-x-auto">
+                            </div>
+                    </div>
+                    
+                    <div id="summary-obs-note-content">
+                        <h3 class="text-xl font-semibold mt-4 mb-3 text-slate-900">Detalle de Fotos y Notas de Observación</h3>
+                        <div id="summary-obs-note-details" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            </div>
+                    </div>
+
+                    <div id="summary-lev-content">
+                        <h3 class="text-xl font-semibold mt-4 mb-3 text-slate-900">Desglose Total por Código (Levantamientos)</h3>
+                        <div id="summary-lev-details" class="text-sm bg-slate-50 p-4 rounded-xl">
+                            </div>
+                    </div>
+
+                    <div id="summary-note-content">
+                        <h3 class="text-xl font-semibold mt-4 mb-3 text-slate-900">Listado de Notas Generales</h3>
+                        <div id="summary-note-details" class="text-sm space-y-3">
+                            </div>
+                    </div>
+                    
+                    <div id="summary-pruebas-content" class="hidden">
+                        <h3 class="text-xl font-semibold mt-4 mb-3 text-slate-900">Pruebas Generales y Revisión</h3>
+                        <div id="summary-pruebas-details" class="text-sm overflow-x-auto">
+                            </div>
+                    </div>
+
+                    <div id="summary-chart-content" class="hidden"> 
+                        <h3 class="text-xl font-semibold mt-4 mb-3 text-slate-900">Gráfico de Incidencia por Partida</h3>
+                        
+                        <div id="summary-chart-legend" class="text-sm text-slate-600 mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200" style="line-height: 1.6;">
+                            </div>
+
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200" style="height: 600px;">
+                            <img id="summary-chart-image" class="w-full h-full" style="display: none;"/>
+                            <canvas id="summary-chart-canvas"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="mt-6">
+                <button id="back-to-pruebas-from-summary" class="btn btn-secondary">Volver a Pruebas</button>
+            </div>
+            
+            <div class="mt-8 flex flex-wrap gap-4 border-t border-slate-200 pt-6">
+                 <button onclick="window.print()" class="btn btn-secondary">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h1v-4h10v4h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                     Imprimir Resumen
+                 </button>
+
+                 <button id="download-excel" class="btn btn-success">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                     Descargar Resumen (Excel)
+                 </button>
+
+                 <!-- Botón para descargar Acta de Entrega como PDF -->
+                 <button id="download-acta-entrega" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Descargar Hoja Completa (JPG)
+                 </button>
+                 <!-- Nuevos botones para dividir la descarga del resumen cuando hay muchas fotos -->
+                 <button id="download-summary-sections" class="btn btn-secondary">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                         <path fill-rule="evenodd" d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zm0 6a1 1 0 000 2h10a1 1 0 100-2H3zm0 6a1 1 0 000 2h6a1 1 0 100-2H3z" clip-rule="evenodd" />
+                     </svg>
+                     Descargar resumen en partes (JPG)
+                 </button>
+                 <button id="download-summary-multipage" class="btn btn-secondary">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V9.828a2 2 0 00-.586-1.414l-4.828-4.828A2 2 0 007.172 3H4zm7 1.414L15.586 9H11a1 1 0 01-1-1V4.414zM8 11a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1zm3 1a1 1 0 112 0v4a1 1 0 11-2 0v-4z" clip-rule="evenodd" />
+                     </svg>
+                     Descargar resumen (PDF multipágina)
+                 </button>
+
+                 <button id="start-new-review" class="btn btn-primary ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                    </svg>
+                    Iniciar Nueva Revisión
+                 </button>
+                 
+                 </div>
+        </div>
+
+    </main> <div id="context-menu">
+        <button id="ctx-menu-obs" class="text-red-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+            Observación
+        </button>
+        <button id="ctx-menu-lev" class="text-green-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+            Lev. Observación
+        </button>
+        <button id="ctx-menu-note" class="text-yellow-600" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+            Añadir Nota
+        </button>
+        <button id="ctx-menu-erase" class="text-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+            Borrador
+        </button>
+    </div>
+
+    <div id="modal-obs" class="modal">
+        <div class="modal-content">
+            <span id="modal-obs-close" class="modal-close">&times;</span>
+            <h3 class="text-xl font-semibold mb-4 text-red-600">Observación</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="modal-obs-partida" class="form-label mb-0">Partida</label>
+                        <div class="flex gap-2">
+                            <button id="modal-partida-prev" class="px-3 py-1 bg-slate-200 text-slate-700 text-xs font-bold rounded-md hover:bg-slate-300">&lt; Ant</button>
+                            <button id="modal-partida-next" class="px-3 py-1 bg-slate-200 text-slate-700 text-xs font-bold rounded-md hover:bg-slate-300">Sig &gt;</button>
+                        </div>
+                    </div>
+                    <select id="modal-obs-partida" class="form-select">
+                        <option value="">Seleccione Partida...</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="modal-obs-item" class="form-label">Observación</label>
+                    <select id="modal-obs-item" class="form-select mt-1" disabled>
+                        <option value="">Seleccione Observación...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="modal-btn-add-obs" class="mt-4 px-4 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 disabled:opacity-50 transition-colors" disabled>Añadir a la lista</button>
+
+            <div class="mt-4">
+                <h4 class="font-semibold text-slate-800">Observaciones en este punto:</h4>
+                <ul id="modal-obs-list" class="list-disc pl-5 mt-2 text-sm text-slate-700 max-h-24 overflow-y-auto bg-slate-50 p-3 rounded-md border border-slate-200">
+                    </ul>
+            </div>
+            
+            
+            <div class="mt-4 hidden">
+                 <input type="file" id="modal-obs-photo" accept="image/*" capture="environment" class="hidden"/>
+                 <img id="modal-obs-photo-preview" src="#" alt="Vista previa de la foto" style="display:none;" />
+            </div>
+
+            <div class="mt-4">
+                <label for="modal-obs-note-text" class="form-label">Notas (Opcional)</label>
+                <textarea id="modal-obs-note-text" rows="2" class="form-input mt-1" placeholder="Detalles adicionales..."></textarea>
+            </div>
+
+            <button id="modal-obs-save" class="mt-6 px-4 py-1.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors shadow-sm">Guardar Observación</button>
+        </div>
+    </div>
+    
+    <div id="modal-note" class="modal">
+        <div class="modal-content">
+            <span id="modal-note-close" class="modal-close">&times;</span>
+            <h3 class="text-xl font-semibold mb-4 text-yellow-600">Añadir Nota</h3>
+            
+            <label for="modal-note-text" class="form-label">Texto de la Nota</label>
+            <textarea id="modal-note-text" rows="4" class="form-input mt-1" placeholder="Escriba su nota aquí..."></textarea>
+            <button id="modal-note-save" class="btn btn-warning mt-6 w-full sm:w-auto">Guardar Nota</button>
+        </div>
+    </div>
+
+    <!-- Modal Nota por Observación individual -->
+    <div id="modal-obs-note-detail" class="modal">
+        <div class="modal-content">
+            <span id="modal-obs-note-detail-close" class="modal-close">&times;</span>
+            <h3 class="text-xl font-semibold mb-4 text-amber-600">Nota de esta observación</h3>
+
+            <label for="modal-obs-note-detail-text" class="form-label">Texto de la nota</label>
+            <textarea id="modal-obs-note-detail-text" rows="3" class="form-input mt-1" placeholder="Escribe la nota para esta observación..."></textarea>
+
+            <label for="modal-obs-note-detail-count" class="form-label mt-4 block">
+                ¿Cuántas veces aparece esta misma observación en la foto?
+                <span class="block text-xs text-slate-500">(Usa 1 si solo aparece una vez)</span>
+            </label>
+            <input id="modal-obs-note-detail-count" type="number" min="1" value="1" class="form-input mt-1" />
+
+            <button id="modal-obs-note-detail-save" class="btn btn-warning mt-6 w-full sm:w-auto">
+                Guardar nota de la observación
+            </button>
+        </div>
+    </div>
+
+    
+    <div id="modal-lev" class="modal">
+        <div class="modal-content">
+            <span id="modal-lev-close" class="modal-close">&times;</span>
+            <h3 class="text-xl font-semibold mb-4 text-green-600">Lev. Observación de Observación</h3>
+            
+            <label for="modal-lev-code" class="form-label">Código de Observación (Manual)</label>
+            <input type="text" id="modal-lev-code" class="form-input mt-1" placeholder="Ej: 54, 99">
+            <button id="modal-lev-save" class="btn btn-success mt-6 w-full sm:w-auto">Guardar Levantamiento</button>
+        </div>
+    </div>
+
+    <div id="loading-spinner" class="modal" style="background-color: rgba(255,255,255,0.8);">
+        <div class="flex flex-col items-center">
+             <svg class="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span id="loading-text" class="mt-4 text-lg font-semibold text-blue-700">Cargando...</span>
+        </div>
+    </div>
+
+
+    <script type="module">
+        /* ********** CONFIGURACIÓN Y BASE DE DATOS ********** */
+        
+        const DB_OBSERVACIONES = {
+            "PINTURA (MUROS/ SUPERFICIES)": [
+                { id: "1", text: "VERTICALIDAD/ APLOME DE MURO (NO TARRAJEADOS, ABULTAMIENTOS, HONGOS, TONALIDAD)" },
+                { id: "2", text: "HUMEDAD (HONGOS, FILTRACIÓN)" },
+                { id: "3", text: "FISURAS, GRIETAS (visible directo al muro)" },
+                { id: "4", text: "DESPINTADO (visible directo al muro)" },
+                { id: "5", text: "GOLPES/ QUIÑES/ HUECOS/ NUDOS (visible directo al muro)" },
+                { id: "6", text: "VETAS O RAYAS (visible directo al muro)" },
+                { id: "7", text: "BRUÑAS (falta, desalineamiento)" },
+                { id: "8", text: "ACABADO EN JUNTAS Y ARISTAS (uniforme y prolijo)" },
+                { id: "9", text: "OTROS" }
+            ],
+            "PAPEL MURAL (MUROS/ SUPERFICIES)": [
+                { id: "10", text: "IRREGULARIDADES (abombamiento, olas)" },
+                { id: "11", text: "LIMPIEZA/ MANCHAS/ GOLPES/ GRUMOS/ PUNTOS/ FILTRACIONES/ QUIÑES" },
+                { id: "12", text: "INADECUADO ACABADO EN UNIONES" }
+            ],
+            "CIELO RASO/ VIGAS DE DRYWALL (TECHO)": [
+                { id: "13", text: "VERTICALIDAD/ APLOME/ ALINEAMIENTO/ ORTOGONALIDAD" },
+                { id: "14", text: "HUMEDAD (HONGOS, FILTRACIÓN)" },
+                { id: "15", text: "FISURAS, GRIETAS" },
+                { id: "16", text: "LIMPIEZA/ MANCHAS" },
+                { id: "17", text: "GOLPES, QUIÑES, ÓXIDO" },
+                { id: "18", text: "VETAS O RAYAS" },
+                { id: "19", text: "DESNIVEL DE PRELOSA" }
+            ],
+            "ESCARCHADO (TECHO/ CIELO RASO)": [
+                { id: "20", text: "GRANOS Y REPARACIONES UNIFORMES" },
+                { id: "21", text: "LIMPIEZA/ MANCHAS/ RAYAS Y DIFERENCIA DE TONALIDAD" },
+                { id: "22", text: "ACABADO PROLIJO" }
+            ],
+            "CONTRAZÓCALO": [
+                { id: "23", text: "ADECUADA INSTALACIÓN/ VACÍOS/ LUCES" },
+                { id: "24", text: "NIVELACIÓN CIELO/ MURO Y CONTRAZÓCALO/ PISO" },
+                { id: "25", text: "FRAGUA/ PASTA/ MANCHAS/ LIMPIEZA/ SELLADO/ GRUMOS" },
+                { id: "26", text: "VARIACIÓN DE TONALIDAD/ COLOCACIÓN DE TAPAS (PERFILES)/ MACILLADO DE ACUERDO A TONALIDAD" }
+            ],
+            "VENTANAS/ MAMPARAS/ CRISTALES": [
+                { id: "27", text: "FUNCIONAMIENTO VENTANAS/ MAMPARAS/ HERMETICIDAD" },
+                { id: "28", text: "FUNCIONAMIENTO PESTILLOS Y SEGUROS" },
+                { id: "29", text: "LIMPIEZA, MANCHAS, GOMA, GOLPES" },
+                { id: "30", text: "RAYONES O BURBUJAS EN CRISTALES" },
+                { id: "31", text: "JUNTAS (SILICONA/ SELLADO)/ EMPAQUETADURA/ COMPLETO/ PROLIJO/ SIN GRUMOS" },
+                { id: "32", text: "INSTALACIÓN DE PERNOS ( COMPLETOS SIN ÓXIDO)" },
+                { id: "33", text: "QUIÑES Y LIMPIEZA EN MARCOS Y HOJAS, RIEL Y BURLETE" }
+            ],
+            "BARANDAS/ CARPINTERÍA METÁLICA)": [
+                { id: "34", text: "FUNCIONAMIENTO (MOVER O EMPUJAR)/ NIVELACIÓN/ FIJACIÓN" },
+                { id: "35", text: "LIMPIEZA/ MANCHAS" },
+                { id: "36", text: "PRESENCIA ÓXIDO/ HONGOS/ POZAS, PICADURAS" },
+                { id: "37", text: "VETAS O RAYAS" },
+                { id: "38", text: "CANOPLA/ SOLDADURA/ INSTALACIÓN/ PUNTOS DE SOLDADURA" },
+                { id: "39", text: "GOLPES/ QUIÑES" },
+                { id: "40", text: "DESPRENDIMIENTO DE PINTURA" },
+                { id: "41", text: "ACABADO/ REMATES" }
+            ],
+            "ENCHAPES (CERÁMICO Y/O PORCELANATO)": [
+                { id: "42", text: "APLOME/ ORTOGONALIDAD/ DESNIVEL" },
+                { id: "43", text: "GOLPES, QUIÑES, ROSURA" },
+                { id: "44", text: "VARIACIÓN DE TONALIDAD" },
+                { id: "46", text: "CAJONEO" }
+            ],
+            "PUERTAS Y MARCOS (PRINCIPAL E INTERIORES)": [
+                { id: "47", text: "ORTOGONALIDAD DE VANO, MARCO Y PUERTA (3 revisiones)" },
+                { id: "48", text: "LLAVES (NUMERACIÓN/ FUNCIONAMIENTO)" },
+                { id: "49", text: "FUNCIONAMIENTO (PUERTA/ CERRADURAS/ CHAPAS)" },
+                { id: "50", text: "ACABADO DE SUPERFICIES (HOJA Y MARCO)" },
+                { id: "51", text: "ACABADO EN LOS BORDES (PINTURA/ LACA/ BARNIZ)" },
+                { id: "52", text: "LIMPIEZA/ MANCHAS/ GOLPES/ GRUMOS/ QUIÑES/ DESPOSTILLADO" },
+                { id: "53", text: "VETAS O RAYAS (DIRECCIÓN DE DISEÑO)" },
+                { id: "54", text: "PRESENCIA ABULTAMIENTO" },
+                { id: "55", text: "DESCUADRE/ ORTOGONALIDAD" },
+                { id: "56", text: "INSTAL. DE TORNILLOS/ PERNOS Y TAPA, TORNILLOS, COMPLETOS" },
+                { id: "57", text: "FALTA DE BISAGRAS/ PERNOS" },
+                { id: "58", text: "TOPE DE PUERTAS (FALTA)/ JEBE DESPEGADO" }
+            ],
+            "CLOSETS (MELAMINE)": [
+                { id: "59", text: "FUNCIONAMIENTO (PUERTAS, CAJONERÍA GENERAL)" },
+                { id: "60", text: "ENCUADRE/ INSTALACIÓN/ ORTOGONALIDAD/ LUCES" },
+                { id: "61", text: "LIMPIEZA/ MANCHAS/ GOLPES/ GRUMOS/ DESPOSTILLADO/ SELLADO EN CANTO/ VARIACIÓN DE TONALIDAD (CANTO Y SUPERFICIE)" },
+                { id: "62", text: "INSTAL. DE TORNILLOS/ PERNOS/ TAPA (COMPLETO)" },
+                { id: "63", text: "ÓXIDO EN BISAGRAS/ PERNOS/ ANCLAJES" },
+                { id: "64", text: "TIRADORES/ ACCESORIOS/ TOPES DE GOMA" },
+                { id: "65", text: "MAL ACABADO EN CANTO/ PANDEO/ SELLO EN CANTO" }
+            ],
+            "MUEBLES DE COCINA (MELAMINE)": [
+                { id: "66", text: "FUNCIONAMIENTO PUERTAS/ CAJONERÍA" },
+                { id: "67", text: "ENCUADRE/ INSTALACIÓN/ ORTOGONALIDAD/ LUCES" },
+                { id: "68", text: "LIMPIEZA/ MANCHAS/ GOLPES/ GRUMOS/ QUIÑES" },
+                { id: "69", text: "INSTAL. DE TORNILLOS/ PERNOS/ TAPA TORNILLO (COMPLETO)" },
+                { id: "70", text: "ÓXIDO EN BISAGRAS/ PERNOS" },
+                { id: "71", text: "TIRADORES/ ACCESORIOS" },
+                { id: "72", text: "INSTALACIÓN/ ACABADO/ SILICONA/ ACABADO" },
+                { id: "73", text: "INSTALACIÓN SILICONA/ ACABADO" },
+                { id: "74", text: "CORREDERAS/ REJILLAS/ ACCESORIOS/ TOPE DE GOMA" },
+                { id: "75", text: "MAL ACABADO EN CANTO/ DESPOSTILLADO" }
+            ],
+            "TABLEROS DE GRANITO": [
+                { id: "76", text: "FUNCIONAMIENTO/ FIJACIÓN/ ESTABILIDAD" },
+                { id: "77", text: "LIMPIEZA/ MANCHAS EN EL TABLERO" },
+                { id: "78", text: "GOLPES/ QUIÑES EN EL TABLERO" },
+                { id: "79", text: "FISURA O GRIETA EN TABLERO O ZÓCALO" },
+                { id: "80", text: "SILICONA/ ACABADO/ ÓXIDO" },
+                { id: "81", text: "PULIDO ADECUADO" },
+                { id: "82", text: "HUMEDAD/ SELLADO/ RESINA" }
+            ],
+            "IISS: LAVADEROS GRIFERÍAS - LLAVE GRAL (SSHH Y COCINA)": [
+                { id: "83", text: "PRUEBAS DE ESCORRENTÍA/ CORRECTA INSTAL." },
+                { id: "84", text: "SILICONA" },
+                { id: "85", text: "PRUEBA DE ESTANQUEDAD/ EMPOZAMIENTO" },
+                { id: "86", text: "INSTAL. Y FUNC. (POZA/ GRIFERÍA/ REGADERA/ NIVELACIÓN DE LLAVES)" },
+                { id: "87", text: "INSTAL Y FUNC. TRAMPA/ PUNTO DE AGUA Y DESAGUE" },
+                { id: "88", text: "LAGRIMEO/ FILTRACIONES" },
+                { id: "89", text: "LIMPIEZA/ MANCHAS/ GOLPES/ RAYONES/ QUIÑES/ ÓXIDO/ SARRO" },
+                { id: "90", text: "PRESENCIA ÓXIDO EN ACCESORIOS, POZAS, LAVATORIOS (LLAVES)" },
+                { id: "91", text: "CORRECTA INSTALACIÓN VÁLVULAS" },
+                { id: "92", text: "BLANQUEADO CAJUELAS PARA VÁLVULAS DE AGUA" }
+            ],
+            "IISS: APARATOS SANITARIOS - INODOROS (SSHH)": [
+                { id: "92B", text: "INSTAL. Y FIJACIÓN (ESTABILIDAD/ SILICONA EN BASE)" }, // ID '92' estaba duplicado, se ajustó a 92B
+                { id: "93", text: "FUNCIONAMIENTO DE VÁLVULAS Y PRESIÓN DE AGUA" },
+                { id: "94", text: "LIMPIEZA INT. TANQUE (POLVILLO O RESTOS)" },
+                { id: "95", text: "INSTAL. (TAPA DE PLÁSTICO/ JUEGO COMPLETO)" },
+                { id: "96", text: "FILTRACIONES U OBSTRUCCIONES/ CORRECTA INSTAL./ LIMPIEZA/ MANCHAS/ GOLPES/ RAYONES/ QUIÑES" },
+                { id: "97", text: "PRESENCIA ÓXIDO EN ACCESORIOS" }
+            ],
+            "IISS: PUNTOS SUMIDEROS- REGISTROS": [
+                { id: "98", text: "PRUEBAS DE ESTANQUEDAD (EMPLAZAMIENTO)" },
+                { id: "99", text: "PRESENCIA ÓXIDO EN ACCESORIOS, SUMIDEROS Y REGISTROS/ MANCHAS EN PINTURA/ RESTOS DE CONSTRUCCIÓN" }
+            ],
+            "IISS: APARATOS SANITARIOS - LAVANDERÍA": [
+                { id: "100", text: "INSTAL. Y FUNC. (PRESIÓN DE AGUA/ BAJA/ OBSERVADO/ POZA/ GRIFERÍA/ LLAVES)" },
+                { id: "101", text: "INSTAL. Y FUNCIÓN TRAMPA/ PUNTO DE AGUA Y DESAGUE" },
+                { id: "102", text: "LAGRIMEOS/ FILTRACIONES" },
+                { id: "103", text: "INSTAL. Y FUNCIÓN VÁLVULAS" },
+                { id: "104", text: "OBSTRUCCIONES O SOPLOS" },
+                { id: "105", text: "PUNTO DE DESAGUE EN LAVADORA 45°" },
+                { id: "106", text: "LIMPIEZA/ MANCHAS/ GOLPES/ RAYONES/ QUIÑES/ ÓXIDO" },
+                { id: "107", text: "RESANE EN PUNTO DE AGUA Y DESAGUE" }
+            ],
+            "IISS: JARDINERAS (ES PARTE DE LA FACHADA)": [
+                { id: "108", text: "PRUEBAS DE ESTANQUEIDAD/ EMPOZAMIENTO" },
+                { id: "109", text: "INSTAL. Y FUNCION PUNTO DE AGUA Y DESAGUE" },
+                { id: "110", text: "LAGRIMEOS/ FILTRACIONES" },
+                { id: "111", text: "ESTANDARIZAR ALTURA DE GRIFO DE RIEGO EN JARDÍN" },
+                { id: "112", text: "IMPERMEABILIZACIÓN" },
+                { id: "113", text: "PRESENCIA DE ÓXIDO/ MANCHAS" }
+            ],
+            "IIEE: TABLERO ELÉCTRICO GENERAL": [
+                { id: "114", text: "FUNCIONAMIENTO LLAVES TERMOMAGNÉTICAS/ DIFERENCIA" },
+                { id: "115", text: "NIVELACIÓN Y ALINEAMIENTO" },
+                { id: "116", text: "COLOCACIÓN DE TAPAS (ESPACIOS LIBRES)" },
+                { id: "117", text: "LEYENDA ENTENDIBLE Y DIAGRAMA UNIFILIAR (COORDINACIÓN/ LEYENDA COMPLETA)" },
+                { id: "118", text: "LIMPIEZA/ MANCHAS/ GOLPES/ QUIÑES" },
+                { id: "119", text: "SEÑALIZACIÓN (SEGURIDAD Y PELIGRO)" }
+            ],
+            "IIEE: INSTALACIONES ELÉCTRICAS": [
+                { id: "120", text: "PRUEBAS DE PILOTAJE" },
+                { id: "121", text: "PRUEBAS DE MEGADO" },
+                { id: "122", text: "COLOCACIÓN HIDROBOX EN TOMACORRIENTE" },
+                { id: "123", text: "NIVELACIÓN DE CAJAS/ TAPAS ELÉCTRICAS (IGUAL TONALIDAD)" },
+                { id: "124", text: "COLOCACIÓN DE TAPAS CIEGAS (EN VACÍOS)/ TAPA DE TOMACORRIENTES" },
+                { id: "125", text: "RESANE EN LUMINARIAS/ TOMACORRIENTES" },
+                { id: "126", text: "SELLADO Y/O FUNCIONAMIENTO DE EXTRACTOR DE AIRE" },
+                { id: "127", text: "LIMPIEZA/ MANCHAS/ GOLPES/ GRUMOS/ QUIÑES/ ÓXIDO" }
+            ]
+        };
+
+        const DB_PRUEBAS_GENERALES = [
+            "JUEGO DE LLAVES (FUNCIONAMIENTO/ NÚMEROS)",
+            "ENERGÍA DEFINITIVA: REALIZACIÓN DE PRUEBAS",
+            "ENERGÍA PROVISIONAL: REALIZACIÓN DE PRUEBAS",
+            "AGUA DEFINITIVA: REALIZACIÓN DE PRUEBAS",
+            "AGUA PROVISIONAL: REALIZACIÓN DE PRUEBAS",
+            "DESAGUE DEFINITIVO: REALIZACIÓN DE PRUEBAS",
+            "DESAGUE PROVISIONAL: REALIZACIÓN DE PRUEBAS",
+            "TOMACORRIENTES: PRUEBAS DE PILOTAJE",
+            "TOMACORRIENTES: PRUEBAS DE MEGADO",
+            "LUMINARIAS: PRUEBAS DE PILOTAJE",
+            "TABLERO GENERAL: PRUEBA DE MEGADOS",
+            "TIMBRE: REALIZACIÓN DE PRUEBAS",
+            "INTERCOMUNICADOR: REALIZACIÓN DE PRUEBAS",
+            "DETECTOR DE HUMO: REALIZACIÓN DE PRUEBAS",
+            "COCINA A GAS: REALIZACIÓN DE PRUEBAS",
+            "HORNO: REALIZACIÓN DE PRUEBAS",
+            "CAMPANA EXTRACTORA: REALIZACIÓN DE PRUEBAS",
+            "ÁREAS/ MEDIDAS INTERIORES: REVISIÓN DE MEDIDAD INTERIORES",
+            "MINUTA DE COMPRA Y VENTA: COMPATIBILIZACIÓN IN SITU"
+        ];
+
+
+        /* ********** VARIABLES GLOBALES Y DE ESTADO ********** */
+        
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.0,
+            minScale = 0.25,
+            maxScale = 2.0;
+
+        let currentReviewColor = '#FF0000';
+        let currentReviewType = '';
+        let currentDept = '';
+        let currentDate = '';
+
+        let allObservations = [];
+        let pruebasGeneralesData = {};
+        
+        let currentTool = null;
+        let isDrawing = false;
+        
+        let lastClickCoords = { x: 0, y: 0 };
+
+        let initialPinchDistance = null;
+
+        
+        // Control de advertencia al salir sin guardar
+        let exitWarningEnabled = true;
+
+        window.addEventListener('beforeunload', function (e) {
+            if (!exitWarningEnabled) return;
+            e.preventDefault();
+            // Mensaje estándar (los navegadores modernos ignoran el texto personalizado)
+            e.returnValue = 'Si sales ahora podrías perder cambios no guardados.';
+        });
+        let baseScale = 1.0;
+        let isPanning = false; 
+        let lastPanPoint = { x: 0, y: 0 }; 
+        
+        let pinchDebounceTimer = null;
+        let lastPinchScale = 1.0;
+        
+        // NUEVO: Para el marcador de toque temporal
+        let tempTapMarker = null; 
+
+        // Variables para arrastrar marcadores sin superposición
+        // draggingObs: observación actualmente seleccionada para arrastrar
+        // dragOffset: diferencia entre el punto de click y el centro del marcador
+        // justDragged: bandera para evitar abrir el menú contextual después de arrastrar
+        let draggingObs = null;
+        let dragOffset = { x: 0, y: 0 };
+        let justDragged = false;
+        
+        // Elementos del DOM (Vistas)
+        let viewHome, view1, view2, view3, view4, view5;
+        let deptNumberInput, nextToView2Btn;
+        let pdfUpload, reviewDate, reviewType, loSubtypeContainer, loSubtype, startReviewBtn;
+        let infoDept, infoDate, infoReviewType;
+        let canvasWrapper, pdfCanvas, drawCanvas, ctx;
+        let prevPageBtn, nextPageBtn, pageNumSpan, pageCountSpan;
+        let zoomInBtn, zoomOutBtn, zoomPercentSpan;
+        let finishReviewBtn, finishPruebasBtn;
+        
+        // Elementos del DOM (Menú Contextual)
+        let contextMenu, ctxMenuObs, ctxMenuLev, ctxMenuNote, ctxMenuErase;
+        
+        // Elementos del DOM (Modales)
+        let modalObs, modalObsClose, modalObsPartida, modalObsItem, modalObsSave;
+        let modalNote, modalNoteClose, modalNoteText, modalNoteSave;
+        let modalLev, modalLevClose, modalLevCode, modalLevSave;
+        
+        let modalBtnAddObs, modalObsList, modalObsNoteText;
+        let modalObsPhoto, modalObsPhotoPreview;
+        let modalObsNoteDetail, modalObsNoteDetailText, modalObsNoteDetailCount, modalObsNoteDetailSave;
+        let currentObsPointList = [];
+        let currentObsPointPhoto = null;
+        let currentObsPhotoIndex = null;
+        let currentObsNoteIndex = null;
+        
+        // Elementos del DOM (Resumen)
+        let summaryDept, summaryDate, summaryReviewType, summaryTotalObs, summaryTotalLevs;
+        let summaryObsContent, summaryLevContent, summaryNoteContent, summaryPruebasContent;
+        let summaryObsDetails, summaryLevDetails, summaryNoteDetails, summaryPruebasDetails;
+        let summaryObsNoteDetails, summaryObsNoteContent;
+        let cloudStatus;
+        
+        // Elementos del DOM (Spinner)
+        let loadingSpinner, loadingText;
+        let summaryChartInstance = null;
+        
+        // Variables de Firebase
+        let app, db, auth, userId, dbDocRef;
+        let dataLoaded = false; 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // Firebase podría no estar cargado cuando se abre esta aplicación en modo offline.
+        // Para evitar errores de desestructuración cuando window.firebase es undefined,
+        // tomamos los miembros desde un objeto seguro. Si Firebase no está presente
+        // los valores permanecerán como undefined y se activará el modo offline.
+        const firebaseModule = window.firebase || {};
+        const {
+            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
+            getFirestore, doc, setDoc, onSnapshot, setLogLevel, enableIndexedDbPersistence
+        } = firebaseModule;
+
+
+        /* ********** INICIALIZACIÓN ********** */
+        
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        function initApp() {
+            // Cachear vistas
+            viewHome = document.getElementById('view-0-home');
+            view1 = document.getElementById('view-1-config');
+            view2 = document.getElementById('view-2-setup');
+            view3 = document.getElementById('view-3-review');
+            view4 = document.getElementById('view-4-summary');
+            view5 = document.getElementById('view-5-pruebas');
+            cloudStatus = document.getElementById('cloud-status');
+
+            // Botones de la pantalla de inicio
+            const btnHomeStart = document.getElementById('btn-home-start-review');
+            const btnHomeSummary = document.getElementById('btn-home-open-summary');
+
+            if (btnHomeStart) {
+                btnHomeStart.addEventListener('click', () => {
+                    showView('view-1-config');
+                });
+            }
+
+            if (btnHomeSummary) {
+                btnHomeSummary.addEventListener('click', () => {
+                    generateSummary();
+                    showView('view-4-summary');
+                });
+            }
+
+            // Mostrar por defecto la vista de inicio (Home)
+            showView('view-0-home');
+
+            // Vista 1
+            deptNumberInput = document.getElementById('dept-number');
+            nextToView2Btn = document.getElementById('next-to-view-2');
+            nextToView2Btn.addEventListener('click', setupView2);
+
+            // Vista 2
+            pdfUpload = document.getElementById('pdf-upload');
+            reviewDate = document.getElementById('review-date');
+            reviewType = document.getElementById('review-type');
+            loSubtypeContainer = document.getElementById('lo-subtype-container');
+            loSubtype = document.getElementById('lo-subtype');
+            startReviewBtn = document.getElementById('start-review');
+            
+            reviewDate.valueAsDate = new Date();
+            pdfUpload.addEventListener('change', validateStartButton);
+            reviewType.addEventListener('change', validateStartButton);
+            reviewType.addEventListener('change', toggleLoSubtype);
+            startReviewBtn.addEventListener('click', setupView3);
+
+            // Vista 3
+            infoDept = document.getElementById('info-dept');
+            infoDate = document.getElementById('info-date');
+            infoReviewType = document.getElementById('info-review-type');
+            
+            canvasWrapper = document.getElementById('canvas-wrapper');
+            pdfCanvas = document.getElementById('pdf-canvas');
+            drawCanvas = document.getElementById('draw-canvas');
+            ctx = drawCanvas.getContext('2d');
+            
+            prevPageBtn = document.getElementById('prev-page');
+            nextPageBtn = document.getElementById('next-page');
+            pageNumSpan = document.getElementById('page-num');
+            pageCountSpan = document.getElementById('page-count');
+            
+            prevPageBtn.addEventListener('click', onPrevPage);
+            nextPageBtn.addEventListener('click', onNextPage);
+
+            zoomInBtn = document.getElementById('zoom-in');
+            zoomOutBtn = document.getElementById('zoom-out');
+            zoomPercentSpan = document.getElementById('zoom-percent');
+            
+            zoomInBtn.addEventListener('click', onZoomIn);
+            zoomOutBtn.addEventListener('click', onZoomOut);
+
+            finishReviewBtn = document.getElementById('finish-review');
+            finishReviewBtn.addEventListener('click', setupView5);
+            
+            document.getElementById('download-pdf').addEventListener('click', downloadPdfWithAnnotations);
+            
+            // Vista 4 (Pruebas)
+            finishPruebasBtn = document.getElementById('finish-pruebas');
+            finishPruebasBtn.addEventListener('click', savePruebasAndShowSummary);
+            document.getElementById('back-to-review-from-pruebas').addEventListener('click', () => showView('view-3-review'));
+
+
+            // Menú Contextual
+            contextMenu = document.getElementById('context-menu');
+            ctxMenuObs = document.getElementById('ctx-menu-obs');
+            ctxMenuLev = document.getElementById('ctx-menu-lev');
+            ctxMenuNote = document.getElementById('ctx-menu-note');
+            ctxMenuErase = document.getElementById('ctx-menu-erase');
+            
+            ctxMenuObs.addEventListener('click', () => openModal('obs'));
+            ctxMenuLev.addEventListener('click', () => openModal('lev'));
+            ctxMenuNote.addEventListener('click', () => openModal('note'));
+            ctxMenuErase.addEventListener('click', () => {
+                currentTool = 'erase';
+                drawCanvas.style.cursor = 'crosshair';
+                hideContextMenu();
+            });
+            
+            // Eventos del Canvas de Dibujo
+            drawCanvas.addEventListener('mouseup', handleCanvasTap);
+            drawCanvas.addEventListener('mousedown', startErasing);
+            drawCanvas.addEventListener('mousemove', erase);
+            drawCanvas.addEventListener('mouseup', stopErasing);
+            drawCanvas.addEventListener('mouseout', stopErasing);
+            drawCanvas.addEventListener('contextmenu', e => e.preventDefault());
+
+            // Eventos para arrastrar marcadores (solo si no estamos borrando)
+            drawCanvas.addEventListener('mousedown', onMarkerDragStart);
+            drawCanvas.addEventListener('mousemove', onMarkerDragMove);
+            drawCanvas.addEventListener('mouseup', onMarkerDragEnd);
+
+            // Eventos Táctiles
+            drawCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            drawCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            drawCanvas.addEventListener('touchend', handleTouchEnd);
+            
+            // Modales
+            modalObs = document.getElementById('modal-obs');
+            modalNote = document.getElementById('modal-note');
+            modalLev = document.getElementById('modal-lev');
+            
+            modalObsClose = document.getElementById('modal-obs-close');
+            modalNoteClose = document.getElementById('modal-note-close');
+            modalLevClose = document.getElementById('modal-lev-close');
+            
+            modalObsClose.onclick = () => closeModal(modalObs);
+            modalNoteClose.onclick = () => closeModal(modalNote);
+            modalLevClose.onclick = () => closeModal(modalLev);
+            
+            // Modal Obs
+            modalObsPartida = document.getElementById('modal-obs-partida');
+            modalObsItem = document.getElementById('modal-obs-item');
+            modalObsSave = document.getElementById('modal-obs-save');
+            modalBtnAddObs = document.getElementById('modal-btn-add-obs');
+            modalObsList = document.getElementById('modal-obs-list');
+            modalObsNoteText = document.getElementById('modal-obs-note-text');
+            modalObsPhoto = document.getElementById('modal-obs-photo');
+            modalObsPhotoPreview = document.getElementById('modal-obs-photo-preview');
+            modalObsNoteDetail = document.getElementById('modal-obs-note-detail');
+            modalObsNoteDetailText = document.getElementById('modal-obs-note-detail-text');
+            modalObsNoteDetailCount = document.getElementById('modal-obs-note-detail-count');
+            modalObsNoteDetailSave = document.getElementById('modal-obs-note-detail-save');
+            const modalObsNoteDetailClose = document.getElementById('modal-obs-note-detail-close');
+            if (modalObsNoteDetailClose) {
+                modalObsNoteDetailClose.onclick = () => closeModal(modalObsNoteDetail);
+            }
+
+            populatePartidasSelect();
+            modalObsPartida.addEventListener('change', populateObservacionesSelect);
+            modalObsItem.addEventListener('change', () => { modalBtnAddObs.disabled = false; });
+            modalBtnAddObs.addEventListener('click', addObsToTempList);
+            modalObsSave.addEventListener('click', saveModalObs); // Modificado para compresión
+            modalObsPhoto.addEventListener('change', handlePhotoPreview);
+            
+            if (modalObsNoteDetailSave) {
+                modalObsNoteDetailSave.addEventListener('click', () => {
+                    if (currentObsNoteIndex === null || !currentObsPointList[currentObsNoteIndex]) return;
+                    const obs = currentObsPointList[currentObsNoteIndex];
+                    const text = (modalObsNoteDetailText?.value || '').trim();
+                    let count = parseInt(modalObsNoteDetailCount?.value || '1', 10);
+                    if (isNaN(count) || count < 1) count = 1;
+                    obs.note = text;
+                    obs.multiplier = count;
+                    updateTempObsListUI();
+                    closeModal(modalObsNoteDetail);
+                });
+            }
+            document.getElementById('modal-partida-prev').addEventListener('click', navigatePartidaPrev);
+            document.getElementById('modal-partida-next').addEventListener('click', navigatePartidaNext);
+            
+            // Modal Note
+            modalNoteText = document.getElementById('modal-note-text');
+            modalNoteSave = document.getElementById('modal-note-save');
+            modalNoteSave.addEventListener('click', saveModalNote);
+            
+            // Modal Lev
+            modalLevCode = document.getElementById('modal-lev-code');
+            modalLevSave = document.getElementById('modal-lev-save');
+            modalLevSave.addEventListener('click', saveModalLev);
+
+            // Vista 5 (Resumen)
+            summaryDept = document.getElementById('summary-dept');
+            summaryDate = document.getElementById('summary-date');
+            summaryReviewType = document.getElementById('summary-review-type');
+            summaryTotalObs = document.getElementById('summary-total-obs');
+            summaryTotalLevs = document.getElementById('summary-total-levs');
+            
+            summaryObsContent = document.getElementById('summary-obs-content');
+            summaryLevContent = document.getElementById('summary-lev-content');
+            summaryNoteContent = document.getElementById('summary-note-content');
+            summaryObsNoteContent = document.getElementById('summary-obs-note-content');
+            summaryPruebasContent = document.getElementById('summary-pruebas-content');
+            
+                        const summaryObsDownloadBtn = document.getElementById('download-summary-obs-img');
+            const summaryChartDownloadBtn = document.getElementById('download-summary-chart-img');
+summaryObsDetails = document.getElementById('summary-obs-details');
+            summaryLevDetails = document.getElementById('summary-lev-details');
+            summaryNoteDetails = document.getElementById('summary-note-details');
+            summaryObsNoteDetails = document.getElementById('summary-obs-note-details');
+            summaryPruebasDetails = document.getElementById('summary-pruebas-details');
+            
+            // MEJORA PUNTO 4: Listener para el nuevo exportador a Excel
+            document.getElementById('download-excel').addEventListener('click', downloadExcelSummary);
+
+        // Descarga por secciones (Opción A) y PDF multipágina (Opción C)
+        const btnSummarySections = document.getElementById('download-summary-sections');
+        const btnSummaryMultipage = document.getElementById('download-summary-multipage');
+
+        if (btnSummarySections) {
+            btnSummarySections.addEventListener('click', async () => {
+                const sections = [
+                    'summary-obs-content',
+                    'summary-obs-note-content',
+                    'summary-lev-content',
+                    'summary-note-content',
+                    'summary-chart-content'
+                ];
+                for (let i = 0; i < sections.length; i++) {
+                    const id = sections[i];
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    const wasHidden = el.classList.contains('hidden');
+                    if (wasHidden) el.classList.remove('hidden');
+                    try {
+                        const canvas = await html2canvas(el, {
+                            scale: 1.5,
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            windowWidth: el.scrollWidth,
+                            windowHeight: el.scrollHeight
+                        });
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        const link = document.createElement('a');
+                        const dept = currentDept || 'resumen';
+                        link.href = dataUrl;
+                        link.download = `resumen_${dept}_parte_${i + 1}.jpg`;
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    } catch (e) {
+                        console.error('Error generando imagen de sección', id, e);
+                    } finally {
+                        if (wasHidden) el.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        if (btnSummaryMultipage) {
+            btnSummaryMultipage.addEventListener('click', async () => {
+                if (!window.jspdf || !html2canvas) {
+                    alert('Falta jsPDF o html2canvas para esta función.');
+                    return;
+                }
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+                let pageIndex = 0;
+                const sections = [
+                    'summary-obs-content',
+                    'summary-obs-note-content',
+                    'summary-lev-content',
+                    'summary-note-content',
+                    'summary-chart-content'
+                ];
+                for (let i = 0; i < sections.length; i++) {
+                    const id = sections[i];
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    const wasHidden = el.classList.contains('hidden');
+                    if (wasHidden) el.classList.remove('hidden');
+                    try {
+                        const canvas = await html2canvas(el, {
+                            scale: 1.5,
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            windowWidth: el.scrollWidth,
+                            windowHeight: el.scrollHeight
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                        const imgWidth = pageWidth;
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        if (pageIndex > 0) pdf.addPage();
+                        pdf.addImage(imgData, 'JPEG', 0, 5, imgWidth, imgHeight);
+                        pageIndex++;
+                    } catch (e) {
+                        console.error('Error generando página de resumen', id, e);
+                    } finally {
+                        if (wasHidden) el.classList.add('hidden');
+                    }
+                }
+                const dept = currentDept || 'resumen';
+                pdf.save(`resumen_multipagina_${dept}.pdf`);
+            });
+        }
+
+            // Descarga de imagen del cuadro de observaciones
+            if (summaryObsDownloadBtn) {
+                summaryObsDownloadBtn.addEventListener('click', downloadSummaryObsAsImage);
+            }
+            // Descarga de imagen del gráfico
+            if (summaryChartDownloadBtn) {
+                summaryChartDownloadBtn.addEventListener('click', downloadSummaryChartAsImage);
+            }
+            // El botón de "Descargar Resumen (PDF)" ha sido eliminado por solicitud del usuario.
+            document.getElementById('back-to-pruebas-from-summary').addEventListener('click', () => showView('view-5-pruebas'));
+
+            // Botón para generar el Acta de Entrega con todo el contenido
+            const actaBtn = document.getElementById('download-acta-entrega');
+            if (actaBtn) {
+                actaBtn.addEventListener('click', downloadFullSummarySheet);
+            }
+            
+            document.getElementById('start-new-review').addEventListener('click', startNewReview);
+
+            // Spinner
+            loadingSpinner = document.getElementById('loading-spinner');
+            loadingText = document.getElementById('loading-text');
+
+            // Ocultar menú contextual
+            window.addEventListener('click', (e) => {
+                if (e.target.id === 'draw-canvas' || contextMenu.contains(e.target)) {
+                    return;
+                }
+                hideContextMenu();
+            });
+            
+            // Ocultar vistas al inicio
+            document.querySelectorAll('.view-container').forEach(view => {
+                if (view.id !== 'view-1-config') {
+                    view.classList.add('view-hidden');
+                }
+            });
+            
+            if (typeof ChartDataLabels !== 'undefined') {
+                Chart.register(ChartDataLabels);
+            } else {
+                console.error("ChartDataLabels plugin not loaded.");
+            }
+            
+            // Iniciar Firebase
+            initFirebase();
+        }
+        
+        /* ********** LÓGICA DE FIREBASE ********** */
+
+        async function initFirebase() {
+            try {
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                // Si la librería de Firebase no está cargada o la configuración está vacía
+                // asumimos que el usuario quiere trabajar en modo offline. Esto previene
+                // excepciones cuando initializeApp es undefined o el objeto de config está vacío.
+                if (!initializeApp || !firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+                    console.warn('No se ha proporcionado configuración de Firebase o la librería no está disponible. Se inicia en modo offline.');
+                    dbDocRef = null;
+                    // Actualizar estado visual
+                    if (cloudStatus) {
+                        if (cloudStatus) cloudStatus.textContent = 'Modo offline';
+                        cloudStatus.classList.remove('text-slate-400', 'text-red-400', 'text-green-400');
+                        cloudStatus.classList.add('text-yellow-400');
+                    }
+                    // Cargar datos desde el almacenamiento local
+                    loadDataFromFirestore();
+                    return;
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('Debug'); 
+
+                try {
+                    await enableIndexedDbPersistence(db);
+                    console.log("Persistencia offline habilitada.");
+                    if (cloudStatus) cloudStatus.textContent = "Offline Habilitado";
+                } catch (err) {
+                    if (err.code == 'failed-precondition') {
+                        console.warn("Múltiples pestañas abiertas, persistencia offline deshabilitada.");
+                    } else if (err.code == 'unimplemented') {
+                        console.warn("Navegador no soporta persistencia offline.");
+                    }
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Usuario autenticado:", userId);
+                        if (cloudStatus) cloudStatus.textContent = "Conectado";
+                        cloudStatus.classList.replace('text-slate-400', 'text-green-400');
+                        
+                        dbDocRef = doc(db, `artifacts/${appId}/public/data/reviewApp/sharedReviewData`);
+                        
+                        loadDataFromFirestore();
+                    } else {
+                        userId = null;
+                        dbDocRef = null;
+                        console.log("Usuario no autenticado.");
+                        if (cloudStatus) cloudStatus.textContent = "Desconectado";
+                        cloudStatus.classList.replace('text-green-400', 'text-slate-400');
+                    }
+                });
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+                if (cloudStatus) cloudStatus.textContent = "Error de conexión";
+                cloudStatus.classList.replace('text-slate-400', 'text-red-400');
+            }
+        }
+
+        function loadDataFromFirestore() {
+            // Si no existe referencia al documento (modo offline), intentar recuperar
+            // datos desde localStorage. Esto permite continuar trabajando sin conexión.
+            if (!dbDocRef) {
+                try {
+                    const localDataStr = localStorage.getItem('reviewData');
+                    if (localDataStr) {
+                        const data = JSON.parse(localDataStr);
+                        // Restaurar estado de la app a partir de los datos locales
+                        currentDept = data.dept || '';
+                        currentDate = data.date || '';
+                        currentReviewType = data.reviewType || '';
+                        if (Array.isArray(data.observations)) {
+                            allObservations = data.observations.map(obs => {
+                                const newObs = { ...obs };
+                                if (newObs.displayX === undefined) newObs.displayX = newObs.x;
+                                if (newObs.displayY === undefined) newObs.displayY = newObs.y;
+                                return newObs;
+                            });
+                        } else {
+                            allObservations = [];
+                        }
+                        pruebasGeneralesData = data.pruebasGenerales || {};
+
+                        // Restaurar UI básica
+                        if (deptNumberInput) deptNumberInput.value = currentDept;
+                        if (reviewDate) reviewDate.value = currentDate || new Date().toISOString().split('T')[0];
+                        if (reviewType) reviewType.value = currentReviewType;
+                        if (infoDept) if (infoDept) infoDept.textContent = currentDept || '---';
+                        if (infoDate) if (infoDate) infoDate.textContent = currentDate || '---';
+                        if (infoReviewType) if (infoReviewType) infoReviewType.textContent = data.reviewTypeText || '---';
+
+                        // Definir color de revisión
+                        switch (currentReviewType) {
+                            case 'R1': currentReviewColor = '#EF4444'; break;
+                            case 'R2': currentReviewColor = '#EAB308'; break;
+                            case 'RF': currentReviewColor = '#3B82F6'; break;
+                            case 'LO': currentReviewColor = '#22C55E'; break;
+                            default: currentReviewColor = '#3B82F6';
+                        }
+
+                        // Siempre iniciar en la primera vista, ignorando cualquier vista almacenada.
+                        // Esto garantiza que al cargar la aplicación se presenten los pasos en orden
+                        // (Datos del departamento, configuración, revisión, etc.) sin saltar a vistas
+                        // intermedias que pudieron quedar guardadas en localStorage/Firestore.
+                        showView('view-1-config');
+                        
+                        // Redibujar elementos específicos según la vista
+                        if (viewToLoad === 'view-3-review') {
+                            if (typeof pdfDoc !== 'undefined' && pdfDoc) {
+                                redrawAllObservations();
+                            }
+                        }
+                        if (viewToLoad === 'view-5-pruebas') {
+                            populatePruebasGeneralesList();
+                        }
+                        if (viewToLoad === 'view-4-summary') {
+                            generateSummary();
+                        }
+                        dataLoaded = true;
+                    } else {
+                        // No hay datos locales, cargar vista inicial
+                        showView('view-1-config');
+                        dataLoaded = true;
+                    }
+                } catch (e) {
+                    console.error('Error al cargar datos locales:', e);
+                    showView('view-1-config');
+                    dataLoaded = true;
+                }
+                // Actualizar indicador de estado
+                if (cloudStatus) {
+                    if (cloudStatus) cloudStatus.textContent = 'Modo offline';
+                    cloudStatus.classList.remove('text-slate-400', 'text-red-400', 'text-green-400');
+                    cloudStatus.classList.add('text-yellow-400');
+                }
+                return;
+            }
+
+            if (cloudStatus) cloudStatus.textContent = "Sincronizando...";
+            
+            onSnapshot(dbDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    console.log("Datos cargados desde Firestore:", data);
+                    
+                    // Restaurar estado de la app
+                    currentDept = data.dept || '';
+                    currentDate = data.date || '';
+                    currentReviewType = data.reviewType || '';
+                    if (data.observations) {
+                        // Asegurar que cada observación tenga coordenadas de visualización
+                        allObservations = data.observations.map(obs => {
+                            const newObs = { ...obs };
+                            if (newObs.displayX === undefined) newObs.displayX = newObs.x;
+                            if (newObs.displayY === undefined) newObs.displayY = newObs.y;
+                            return newObs;
+                        });
+                    } else {
+                        allObservations = [];
+                    }
+                    pruebasGeneralesData = data.pruebasGenerales || {};
+                    
+                    // Restaurar UI
+                    deptNumberInput.value = currentDept;
+                    reviewDate.value = currentDate || new Date().toISOString().split('T')[0];
+                    reviewType.value = currentReviewType;
+                    if (infoDept) infoDept.textContent = currentDept || '---';
+                    if (infoDate) infoDate.textContent = currentDate || '---';
+                    if (infoReviewType) infoReviewType.textContent = data.reviewTypeText || '---';
+
+                    switch (currentReviewType) {
+                        case 'R1': currentReviewColor = '#EF4444'; break;
+                        case 'R2': currentReviewColor = '#EAB308'; break;
+                        case 'RF': currentReviewColor = '#3B82F6'; break;
+                        case 'LO': currentReviewColor = '#22C55E'; break;
+                    }
+                    
+                    // Siempre iniciar en la primera vista, ignorando cualquier vista almacenada.
+                    showView('view-1-config');
+                    
+                    if (viewToLoad === 'view-3-review') {
+                        if (pdfDoc) {
+                             redrawAllObservations();
+                        }
+                    }
+                    
+                    if (viewToLoad === 'view-5-pruebas') {
+                        populatePruebasGeneralesList();
+                    }
+
+                    if (viewToLoad === 'view-4-summary') {
+                        generateSummary();
+                    }
+                    
+                } else {
+                    console.log("No se encontró documento, creando uno nuevo...");
+                    saveDataToFirestore();
+                }
+                if (cloudStatus) cloudStatus.textContent = "Sincronizado";
+                setTimeout(() => { if(if (cloudStatus) cloudStatus.textContent === "Sincronizado") cloudStatus.textContent = "Conectado"; }, 2000);
+                dataLoaded = true; 
+            }, (error) => {
+                console.error("Error al escuchar datos:", error);
+                if (cloudStatus) cloudStatus.textContent = "Error de sinc.";
+            });
+        }
+
+        let __firestoreSaveTimeout = null;
+let __firestorePendingPayload = null;
+
+/**
+ * Guarda el estado actual de la app.
+ * - Si no hay Firestore disponible: guarda sólo en localStorage.
+ * - Si hay Firestore: hace una sola escritura debounced para evitar “bloqueos”.
+ */
+async function saveDataToFirestore() {
+    if (!dataLoaded) return;
+
+    const dataToSave = {
+        dept: currentDept,
+        date: currentDate,
+        reviewType: currentReviewType,
+        reviewTypeText: infoReviewType ? infoReviewType.textContent : '',
+        observations: allObservations,
+        pruebasGenerales: pruebasGeneralesData,
+        currentView: getActiveViewId()
+    };
+
+    // Modo offline: solo localStorage
+    if (!dbDocRef) {
+        try {
+            localStorage.setItem('reviewData', JSON.stringify(dataToSave));
+            console.log('[Storage] Datos guardados localmente.');
+            if (cloudStatus) {
+                if (cloudStatus) cloudStatus.textContent = 'Guardado local';
+                cloudStatus.classList.remove('text-slate-400', 'text-red-400', 'text-green-400');
+                cloudStatus.classList.add('text-yellow-400');
+                setTimeout(() => {
+                    if (if (cloudStatus) cloudStatus.textContent === 'Guardado local') {
+                        cloudStatus.textContent = 'Modo offline';
+                    }
+                }, 1500);
+            }
+        } catch (e) {
+            console.error('[Storage] Error al guardar datos localmente:', e);
+            if (cloudStatus) if (cloudStatus) cloudStatus.textContent = 'Error al guardar';
+        }
+        return;
+    }
+
+    // Online con Firestore: debounced para reducir escrituras y evitar bloqueos
+    __firestorePendingPayload = dataToSave;
+
+    if (__firestoreSaveTimeout) {
+        clearTimeout(__firestoreSaveTimeout);
+    }
+
+    __firestoreSaveTimeout = setTimeout(async () => {
+        const payload = __firestorePendingPayload;
+        __firestorePendingPayload = null;
+        __firestoreSaveTimeout = null;
+
+        if (!payload || !dbDocRef) return;
+
+        if (cloudStatus) {
+            if (cloudStatus) cloudStatus.textContent = 'Guardando...';
+            cloudStatus.classList.remove('text-slate-400', 'text-red-400', 'text-yellow-400');
+            cloudStatus.classList.add('text-green-400');
+        }
+
+        try {
+            await setDoc(dbDocRef, payload);
+            console.log('[Firestore] Datos guardados correctamente.');
+            if (cloudStatus) {
+                if (cloudStatus) cloudStatus.textContent = 'Guardado';
+                setTimeout(() => {
+                    if (if (cloudStatus) cloudStatus.textContent === 'Guardado') {
+                        cloudStatus.textContent = 'Conectado';
+                    }
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('[Firestore] Error al guardar datos:', error);
+            if (cloudStatus) {
+                if (cloudStatus) cloudStatus.textContent = 'Error al guardar';
+                cloudStatus.classList.remove('text-green-400');
+                cloudStatus.classList.add('text-red-400');
+            }
+        }
+    }, 400);
+}
+
+/* ********** NAVEGÁCIÓN DE VISTAS (MODIFICADA) ********** */
+        
+        function showView(viewId) {
+            [viewHome, view1, view2, view3, view4, view5].forEach(v => {
+                if (!v) return;
+                if (v.id === viewId) {
+                    v.classList.remove('view-hidden');
+                } else {
+                    v.classList.add('view-hidden');
+                }
+            });
+        }
+
+        function getActiveViewId() {
+            if (!view1.classList.contains('view-hidden')) return 'view-1-config';
+            if (!view2.classList.contains('view-hidden')) return 'view-2-setup';
+            if (!view3.classList.contains('view-hidden')) return 'view-3-review';
+            if (!view5.classList.contains('view-hidden')) return 'view-5-pruebas';
+            if (!view4.classList.contains('view-hidden')) return 'view-4-summary';
+            return 'view-1-config'; 
+        }
+
+        function setupView2() {
+            currentDept = deptNumberInput.value;
+            if (!currentDept) {
+                alert("Por favor, ingrese un número de departamento.");
+                return;
+            }
+            showView('view-2-setup'); 
+            if (infoDept) infoDept.textContent = currentDept;
+            saveDataToFirestore(); 
+        }
+
+        function validateStartButton() {
+            const pdfReady = pdfUpload.files.length > 0;
+            const reviewTypeReady = reviewType.value !== "";
+            startReviewBtn.disabled = !(pdfReady && reviewTypeReady);
+        }
+
+        function toggleLoSubtype() {
+            if (reviewType.value === 'LO') {
+                loSubtypeContainer.classList.remove('hidden');
+            } else {
+                loSubtypeContainer.classList.add('hidden');
+            }
+        }
+
+        function setupView3() {
+            currentDate = reviewDate.value;
+            currentReviewType = reviewType.value;
+            let reviewTypeText = reviewType.options[reviewType.selectedIndex].text;
+
+            if (currentReviewType === 'LO') {
+                const subType = loSubtype.options[loSubtype.selectedIndex].text;
+                reviewTypeText += ` (Corresp. a ${subType})`;
+            }
+
+            switch (currentReviewType) {
+                case 'R1': currentReviewColor = '#EF4444'; break;
+                case 'R2': currentReviewColor = '#EAB308'; break;
+                case 'RF': currentReviewColor = '#3B82F6'; break;
+                case 'LO': currentReviewColor = '#22C55E'; break;
+            }
+            
+            if (infoDate) infoDate.textContent = currentDate;
+            if (infoReviewType) infoReviewType.textContent = reviewTypeText;
+            
+            ctxMenuObs.style.display = 'flex';
+            ctxMenuLev.style.display = 'flex';
+
+            saveDataToFirestore(); 
+
+            const file = pdfUpload.files[0];
+            if (!file) return;
+
+            const fileReader = new FileReader();
+            fileReader.onload = function() {
+                const typedarray = new Uint8Array(this.result);
+                
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+                showLoading("Cargando PDF...");
+                const loadingTask = pdfjsLib.getDocument(typedarray);
+                loadingTask.promise.then(function(pdf) {
+                    pdfDoc = pdf;
+                    pageCountSpan.textContent = pdfDoc.numPages;
+                    pageNum = 1;
+                    renderPage(pageNum);
+                    
+                    showView('view-3-review'); 
+                    hideLoading();
+                }, function (reason) {
+                    console.error(reason);
+                    alert("Error al cargar el PDF.");
+                    hideLoading();
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // Función para ir a la Vista 5 (Pruebas)
+        function setupView5() {
+            showView('view-5-pruebas');
+            populatePruebasGeneralesList();
+            saveDataToFirestore();
+        }
+        
+        function populatePruebasGeneralesList() {
+            const listContainer = document.getElementById('pruebas-generales-list');
+            const htmlFragments = []; 
+            
+            DB_PRUEBAS_GENERALES.forEach((prueba, index) => {
+                const savedValue = pruebasGeneralesData[prueba] || 'N/A';
+                
+                const itemHtml = `
+                    <div class="prueba-item">
+                        <label for="prueba-${index}">${prueba}</label>
+                        <div class="options">
+                            <label>
+                                <input type="radio" name="prueba-${index}" value="SI" ${savedValue === 'SI' ? 'checked' : ''} class="text-green-600 focus:ring-green-500">
+                                <span class="text-green-700 font-medium">SI</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="prueba-${index}" value="NO" ${savedValue === 'NO' ? 'checked' : ''} class="text-red-600 focus:ring-red-500">
+                                <span class="text-red-700 font-medium">NO</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="prueba-${index}" value="N/A" ${savedValue === 'N/A' ? 'checked' : ''} class="text-slate-500 focus:ring-slate-400">
+                                <span class="text-slate-600">N/A</span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+                htmlFragments.push(itemHtml); 
+            });
+            
+            listContainer.innerHTML = htmlFragments.join(''); 
+        }
+        
+        function savePruebasAndShowSummary() {
+            pruebasGeneralesData = {};
+            DB_PRUEBAS_GENERALES.forEach((prueba, index) => {
+                const radios = document.getElementsByName(`prueba-${index}`);
+                let selectedValue = 'N/A';
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        selectedValue = radio.value;
+                        break;
+                    }
+                }
+                pruebasGeneralesData[prueba] = selectedValue;
+            });
+            
+            console.log("Pruebas Generales guardadas:", pruebasGeneralesData);
+            saveDataToFirestore(); 
+            setupView4(); 
+        }
+
+        // Esta es ahora la VISTA FINAL (Resumen)
+        function setupView4() {
+            showView('view-4-summary'); 
+            
+            summaryDept.textContent = currentDept;
+            summaryDate.textContent = currentDate;
+            summaryReviewType.textContent = infoReviewType.textContent;
+            
+            generateSummary();
+            saveDataToFirestore(); 
+        }
+
+        /* ********** LÓGICA DE PDF Y CANVAS ********** */
+        
+        function renderPage(num) {
+            pageRendering = true;
+
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+
+                pdfCanvas.height = viewport.height;
+                pdfCanvas.width = viewport.width;
+                drawCanvas.height = viewport.height;
+                drawCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: pdfCanvas.getContext('2d'),
+                    viewport: viewport
+                };
+
+                const renderTask = page.render(renderContext);
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                    redrawAllObservations();
+                });
+            });
+
+            pageNumSpan.textContent = num;
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+        
+        function setZoom(newScale) {
+            scale = Math.max(minScale, Math.min(maxScale, newScale));
+            scale = parseFloat(scale.toFixed(2));
+            zoomPercentSpan.textContent = `${Math.round(scale * 100)}%`;
+            queueRenderPage(pageNum);
+        }
+        
+        function onZoomIn() {
+            setZoom(scale + 0.25);
+        }
+        
+        function onZoomOut() {
+            setZoom(scale - 0.25);
+        }
+
+        function redrawAllObservations() {
+            if (!ctx) return; 
+            ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            const obsOnThisPage = allObservations.filter(obs => obs.page === pageNum);
+            
+            obsOnThisPage.forEach(obs => {
+                // Usar displayX/displayY si existen, de lo contrario usar x/y originales
+                const dispX = (obs.displayX !== undefined ? obs.displayX : obs.x) * scale;
+                const dispY = (obs.displayY !== undefined ? obs.displayY : obs.y) * scale;
+                const origX = obs.x * scale;
+                const origY = obs.y * scale;
+                let color;
+                let text;
+                switch (obs.type) {
+                    case 'obs':
+                        color = currentReviewColor;
+                        text = obs.codes.join(', ');
+                        break;
+                    case 'note':
+                        color = '#F59E0B';
+                        text = 'N';
+                        break;
+                    case 'lev':
+                        color = '#22C55E';
+                        text = obs.code;
+                        break;
+                }
+                // Dibujar flecha si el marcador fue movido
+                if (dispX !== origX || dispY !== origY) {
+                    drawArrow(dispX, dispY, origX, origY, color);
+                }
+                drawMark(dispX, dispY, text, color);
+            });
+        }
+        
+        /**
+         * MEJORA PUNTO 1: Marcadores visuales mejorados
+         * Radio y fuente más grandes, y sombra de texto para legibilidad.
+         */
+        function drawMark(x, y, text, color, targetCtx = ctx, scaleFactor = 1) {
+            /*
+             * Dibuja un marcador con tamaño consistente tanto en el plano editable
+             * como en el PDF exportado. El tamaño base se escala con 'scaleFactor'
+             * (para exportar usamos el mismo factor que el viewport del PDF).
+             */
+            const baseRadius = 8;
+            const baseFontSize = 11;
+
+            const isPdfSmall = targetCtx && targetCtx.__forPdfSmall === true;
+            const adjust = isPdfSmall ? 0.80 : 1;
+
+            const radius = baseRadius * scaleFactor * adjust;
+            const fontSize = baseFontSize * scaleFactor * adjust;
+
+            // 1. Dibujar círculo de color del marcador
+            targetCtx.beginPath();
+            targetCtx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            targetCtx.fillStyle = color;
+            targetCtx.fill();
+
+            // Borde sutil alrededor del círculo
+            targetCtx.lineWidth = 2 * scaleFactor * adjust;
+            targetCtx.strokeStyle = 'rgba(0,0,0,0.6)';
+            targetCtx.stroke();
+
+            // 2. Calcular posición del texto y dibujar un fondo celeste detrás
+            const offsetX = radius + 8 * scaleFactor * adjust; // separación entre círculo y texto
+            const textX = x + offsetX;
+            const textY = y;
+
+            // Configurar fuente para poder medir el texto
+            targetCtx.font = `bold ${fontSize}px Arial`;
+            targetCtx.textAlign = 'left';
+            targetCtx.textBaseline = 'middle';
+
+            const metrics = targetCtx.measureText(text);
+            const textWidth = metrics.width;
+            const textHeight = fontSize; // aproximación
+
+            const padX = 6 * scaleFactor * adjust;
+            const padY = 3 * scaleFactor * adjust;
+
+            const bgX = textX - padX;
+            const bgY = textY - textHeight / 2 - padY;
+            const bgWidth = textWidth + padX * 2;
+            const bgHeight = textHeight + padY * 2;
+            const borderRadius = 6 * scaleFactor * adjust;
+
+            // Dibujar rectángulo redondeado celeste de fondo
+            targetCtx.beginPath();
+            targetCtx.moveTo(bgX + borderRadius, bgY);
+            targetCtx.lineTo(bgX + bgWidth - borderRadius, bgY);
+            targetCtx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + borderRadius);
+            targetCtx.lineTo(bgX + bgWidth, bgY + bgHeight - borderRadius);
+            targetCtx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - borderRadius, bgY + bgHeight);
+            targetCtx.lineTo(bgX + borderRadius, bgY + bgHeight);
+            targetCtx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - borderRadius);
+            targetCtx.lineTo(bgX, bgY + borderRadius);
+            targetCtx.quadraticCurveTo(bgX, bgY, bgX + borderRadius, bgY);
+            targetCtx.closePath();
+
+            // Relleno y borde del fondo
+            // Celeste suave con ligera transparencia
+            targetCtx.fillStyle = 'rgba(191, 219, 254, 0.95)'; // #bfdbfe aproximado
+            targetCtx.fill();
+            targetCtx.lineWidth = 1 * scaleFactor;
+            targetCtx.strokeStyle = 'rgba(30, 64, 175, 0.3)'; // borde azul suave
+            targetCtx.stroke();
+
+            // 3. Dibujar el texto con una sombra ligera para mejorar contraste
+            targetCtx.shadowColor = 'rgba(15, 23, 42, 0.35)';
+            targetCtx.shadowBlur = 3 * scaleFactor * adjust;
+            targetCtx.shadowOffsetX = 1 * scaleFactor * adjust;
+            targetCtx.shadowOffsetY = 1 * scaleFactor * adjust;
+
+            targetCtx.fillStyle = '#0f172a'; // texto azul muy oscuro
+            targetCtx.fillText(text, textX, textY);
+
+            // Resetear propiedades de sombra
+            targetCtx.shadowColor = 'transparent';
+            targetCtx.shadowBlur = 0;
+            targetCtx.shadowOffsetX = 0;
+            targetCtx.shadowOffsetY = 0;
+        }
+
+function drawArrow(fromX, fromY, toX, toY, color, targetCtx = ctx, scaleFactor = 1) {
+            /*
+             * Dibuja una flecha con tamaño consistente. El grosor de línea y la
+             * longitud de la punta se escalan con 'scaleFactor'.
+             */
+            const baseHeadLen = 10;
+            const headLen = baseHeadLen * scaleFactor;
+            const lineWidth = 2.5 * scaleFactor;
+
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+
+            // Línea principal
+            targetCtx.beginPath();
+            targetCtx.strokeStyle = color;
+            targetCtx.lineWidth = lineWidth;
+            targetCtx.moveTo(fromX, fromY);
+            targetCtx.lineTo(toX, toY);
+            targetCtx.stroke();
+
+            // Punta de flecha
+            targetCtx.beginPath();
+            targetCtx.fillStyle = color;
+            targetCtx.moveTo(toX, toY);
+            targetCtx.lineTo(
+                toX - headLen * Math.cos(angle - Math.PI / 6),
+                toY - headLen * Math.sin(angle - Math.PI / 6)
+            );
+            targetCtx.lineTo(
+                toX - headLen * Math.cos(angle + Math.PI / 6),
+                toY - headLen * Math.sin(angle + Math.PI / 6)
+            );
+            targetCtx.closePath();
+            targetCtx.fill();
+        }
+
+function drawTempMarker(x, y) {
+            if (!ctx) return;
+            const radius = 6;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'rgba(0, 110, 255, 0.7)'; // Azul semitransparente
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(x - radius, y);
+            ctx.lineTo(x + radius, y);
+            ctx.moveTo(x, y - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            tempTapMarker = { x, y }; // Guardar la posición del marcador
+        }
+
+        /* ********** LÓGICA DE HERRAMIENTAS Y DIBUJO ********** */
+        
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (evt.clientX - rect.left) * scaleX;
+            const y = (evt.clientY - rect.top) * scaleY;
+            
+            return { x, y };
+        }
+
+        function handleCanvasTap(e) {
+    // Si acabamos de arrastrar un marcador, no abrir menú ni crear nuevo marcador
+    if (justDragged) {
+        justDragged = false;
+        return;
+    }
+
+    // Cuando el borrador está activo no debemos abrir el menú ni crear marcadores
+    if (currentTool === 'erase') {
+        return;
+    }
+
+    currentTool = null;
+    drawCanvas.style.cursor = 'default';
+
+    redrawAllObservations();
+
+    const pos = getMousePos(drawCanvas, e);
+
+    lastClickCoords = {
+        x: pos.x / scale,
+        y: pos.y / scale
+    };
+
+    drawTempMarker(pos.x, pos.y);
+
+    showContextMenu(e.clientX, e.clientY);
+}
+
+        function startErasing(e) {
+            if (currentTool !== 'erase') return;
+            if (e.buttons === 1) { 
+                isDrawing = true;
+                erase(e); 
+            }
+        }
+
+        function erase(e) {
+            if (currentTool !== 'erase' || !isDrawing) return;
+            
+            const pos = getMousePos(drawCanvas, e);
+            const normalizedPos = { x: pos.x / scale, y: pos.y / scale };
+
+            let radius = 15; 
+            let obsToRemove = [];
+            // Revisar cada observación para detectar colisiones con el círculo de borrado
+            allObservations.forEach((obs, index) => {
+                if (obs.page === pageNum) {
+                    const dx = obs.x - normalizedPos.x;
+                    const dy = obs.y - normalizedPos.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < radius) {
+                        obsToRemove.push(index);
+                    }
+                }
+            });
+
+            // Eliminar observaciones marcadas para borrar
+            obsToRemove.reverse().forEach(index => {
+                allObservations.splice(index, 1);
+            });
+
+            if (obsToRemove.length > 0) {
+                redrawAllObservations();
+                saveDataToFirestore();
+            }
+        }
+
+        /**
+         * Manejadores para arrastrar marcadores y evitar superposición
+         * Permite mover las observaciones en el canvas y dibuja una flecha a su posición original
+         */
+        function onMarkerDragStart(e) {
+            // No arrastrar cuando el borrador está activo
+            if (currentTool === 'erase') return;
+            const pos = getMousePos(drawCanvas, e);
+            const nx = pos.x / scale;
+            const ny = pos.y / scale;
+            const radius = 14;
+            for (let i = allObservations.length - 1; i >= 0; i--) {
+                const obs = allObservations[i];
+                if (obs.page !== pageNum) continue;
+                const obsX = (obs.displayX !== undefined ? obs.displayX : obs.x);
+                const obsY = (obs.displayY !== undefined ? obs.displayY : obs.y);
+                const dx = obsX - nx;
+                const dy = obsY - ny;
+                if (Math.sqrt(dx * dx + dy * dy) < radius) {
+                    draggingObs = obs;
+                    dragOffset.x = nx - obsX;
+                    dragOffset.y = ny - obsY;
+                    drawCanvas.style.cursor = 'move';
+                    break;
+                }
+            }
+        }
+
+        function onMarkerDragMove(e) {
+            if (!draggingObs) return;
+            const pos = getMousePos(drawCanvas, e);
+            const nx = pos.x / scale;
+            const ny = pos.y / scale;
+            draggingObs.displayX = nx - dragOffset.x;
+            draggingObs.displayY = ny - dragOffset.y;
+            justDragged = true;
+            redrawAllObservations();
+        }
+
+        function onMarkerDragEnd(e) {
+            if (!draggingObs) return;
+            draggingObs = null;
+            drawCanvas.style.cursor = 'default';
+            saveDataToFirestore();
+        }
+
+        function stopErasing() {
+            if (currentTool === 'erase') {
+                isDrawing = false;
+                currentTool = null;
+                drawCanvas.style.cursor = 'default';
+            }
+        }
+
+        /* ********** LÓGICA DE ZOOM TÁCTIL Y PANEO (CORREGIDA) ********** */
+        
+        function getPinchDistance(e) {
+            let touch1 = e.touches[0];
+            let touch2 = e.touches[1];
+            return Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+        }
+
+        function handleTouchStart(e) {
+    const touches = e.touches;
+
+    // MODO BORRADOR EN TÁCTIL
+    if (currentTool === 'erase' && touches.length === 1) {
+        e.preventDefault();
+        isDrawing = true;
+        const t = touches[0];
+        erase({ clientX: t.clientX, clientY: t.clientY });
+        return;
+    }
+
+    // Intentar iniciar arrastre de marcador con un solo dedo
+    if (touches.length === 1 && currentTool !== 'erase') {
+        const touch = touches[0];
+        const fakeEvt = { clientX: touch.clientX, clientY: touch.clientY };
+        const pos = getMousePos(drawCanvas, fakeEvt);
+        const nx = pos.x / scale;
+        const ny = pos.y / scale;
+        const radius = 14;
+        for (let i = allObservations.length - 1; i >= 0; i--) {
+            const obs = allObservations[i];
+            if (obs.page !== pageNum) continue;
+            const obsX = (obs.displayX !== undefined ? obs.displayX : obs.x);
+            const obsY = (obs.displayY !== undefined ? obs.displayY : obs.y);
+            const dx = obsX - nx;
+            const dy = obsY - ny;
+            if (Math.sqrt(dx * dx + dy * dy) < radius) {
+                draggingObs = obs;
+                dragOffset.x = nx - obsX;
+                dragOffset.y = ny - obsY;
+                justDragged = false;
+                e.preventDefault();
+                return; // no iniciar paneo, estamos arrastrando un marcador
+            }
+        }
+    }
+
+    // Si no estamos arrastrando ni borrando, manejar pan/zoom como antes
+    if (touches.length === 1) {
+        isPanning = false;
+        lastPanPoint = { x: touches[0].clientX, y: touches[0].clientY };
+    }
+    else if (touches.length === 2) {
+        e.preventDefault();
+        isPanning = true;
+        initialPinchDistance = getPinchDistance(e);
+        baseScale = scale;
+        lastPinchScale = scale;
+    }
+}
+
+function handleTouchMove(e) {
+    const touches = e.touches;
+
+    // BORRADOR TÁCTIL
+    if (currentTool === 'erase' && isDrawing && touches.length === 1) {
+        e.preventDefault();
+        const t = touches[0];
+        erase({ clientX: t.clientX, clientY: t.clientY });
+        return;
+    }
+
+    // ARRASTRE DE MARCADORES CON UN DEDO
+    if (draggingObs && touches.length === 1) {
+        e.preventDefault();
+        const touch = touches[0];
+        const fakeEvt = { clientX: touch.clientX, clientY: touch.clientY };
+        const pos = getMousePos(drawCanvas, fakeEvt);
+        const nx = pos.x / scale;
+        const ny = pos.y / scale;
+        draggingObs.displayX = nx - dragOffset.x;
+        draggingObs.displayY = ny - dragOffset.y;
+        justDragged = true;
+        redrawAllObservations();
+        return;
+    }
+
+    // Si no estamos arrastrando ni borrando, mantener lógica de paneo/zoom original
+    if (touches.length === 1) {
+        e.preventDefault();
+        isPanning = true;
+
+        const currentPanPoint = { x: touches[0].clientX, y: touches[0].clientY };
+        const deltaX = currentPanPoint.x - lastPanPoint.x;
+        const deltaY = currentPanPoint.y - lastPanPoint.y;
+
+        canvasWrapper.scrollLeft -= deltaX;
+        canvasWrapper.scrollTop -= deltaY;
+
+        lastPanPoint = currentPanPoint;
+    }
+    else if (touches.length === 2) {
+        e.preventDefault();
+
+        if (initialPinchDistance === null) {
+            initialPinchDistance = getPinchDistance(e);
+            baseScale = scale;
+            return;
+        }
+
+        const newDistance = getPinchDistance(e);
+        let newScale = (newDistance / initialPinchDistance) * baseScale;
+
+        newScale = Math.max(0.4, Math.min(3.0, newScale));
+        lastPinchScale = newScale;
+
+        zoomPercentSpan.textContent = `${Math.round(newScale * 100)}%`;
+
+        clearTimeout(pinchDebounceTimer);
+        pinchDebounceTimer = setTimeout(() => {
+            pinchDebounceTimer = null;
+            setZoom(newScale);
+        }, 250);
+    }
+}
+
+function handleTouchEnd(e) {
+    // Finalizar borrado táctil
+    if (currentTool === 'erase' && isDrawing && e.touches.length === 0) {
+        isDrawing = false;
+        currentTool = null;
+        drawCanvas.style.cursor = 'default';
+    }
+
+    // Finalizar arrastre de marcador
+    if (draggingObs && e.touches.length === 0) {
+        draggingObs = null;
+        drawCanvas.style.cursor = 'default';
+        saveDataToFirestore();
+    }
+
+    if (pinchDebounceTimer) {
+        setZoom(lastPinchScale || scale);
+        pinchDebounceTimer = null;
+    }
+
+    if (e.touches.length < 2) {
+        initialPinchDistance = null;
+    }
+    if (e.touches.length < 1) {
+        isPanning = false;
+    }
+}
+
+        function showContextMenu(x, y) {
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const menuW = contextMenu.offsetWidth;
+            const menuH = contextMenu.offsetHeight;
+
+            let left = x;
+            let top = y;
+
+            if (x + menuW > screenW) {
+                left = screenW - menuW - 10; 
+            }
+            if (y + menuH > screenH) {
+                top = screenH - menuH - 10;
+            }
+
+            contextMenu.style.left = `${left}px`;
+            contextMenu.style.top = `${top}px`;
+            contextMenu.style.display = 'block';
+        }
+        
+        function hideContextMenu() {
+            contextMenu.style.display = 'none';
+            if (tempTapMarker) {
+                redrawAllObservations(); 
+                tempTapMarker = null;
+            }
+        }
+        
+        function openModal(type) {
+            hideContextMenu();
+            
+            if (type === 'obs') {
+                resetObsModal(); 
+                modalObs.classList.add('modal-visible');
+            }
+            if (type === 'note') {
+                modalNoteText.value = '';
+                modalNote.classList.add('modal-visible');
+            }
+            if (type === 'lev') {
+                modalLevCode.value = '';
+                modalLev.classList.add('modal-visible');
+            }
+        }
+        
+        function closeModal(modalElement) {
+            modalElement.classList.remove('modal-visible');
+            if (tempTapMarker) {
+                redrawAllObservations();
+                tempTapMarker = null;
+            }
+        }
+        
+        // --- Lógica Modal Observación ---
+        
+        function populatePartidasSelect() {
+            modalObsPartida.innerHTML = '<option value="">Seleccione Partida...</option>'; 
+            const partidas = Object.keys(DB_OBSERVACIONES);
+            partidas.forEach(partida => {
+                const option = document.createElement('option');
+                option.value = partida;
+                option.textContent = partida;
+                modalObsPartida.appendChild(option);
+            });
+        }
+        
+        function populateObservacionesSelect() {
+            const selectedPartida = modalObsPartida.value;
+            modalObsItem.innerHTML = '<option value="">Seleccione Observación...</option>';
+            modalObsItem.disabled = true;
+            modalBtnAddObs.disabled = true;
+
+            if (selectedPartida && DB_OBSERVACIONES[selectedPartida]) {
+                const observaciones = DB_OBSERVACIONES[selectedPartida];
+                observaciones.forEach(obs => {
+                    const option = document.createElement('option');
+                    option.value = obs.id;
+                    option.textContent = `${obs.id} - ${obs.text}`;
+                    modalObsItem.appendChild(option);
+                });
+                modalObsItem.disabled = false;
+            }
+        }
+        
+        function addObsToTempList() {
+            const obsId = modalObsItem.value;
+            const obsText = modalObsItem.options[modalObsItem.selectedIndex]?.text || '';
+
+            if (!obsId) return;
+
+            if (currentObsPointList.find(obs => obs.id === obsId)) {
+                alert("Esta observación ya fue añadida a este punto.");
+                return;
+            }
+
+            // Cada observación tendrá su propio espacio para foto y nota individual
+            currentObsPointList.push({
+                id: obsId,
+                text: obsText,
+                photoData: null,
+                note: '',
+                multiplier: 1
+            });
+
+            updateTempObsListUI();
+
+            modalObsItem.selectedIndex = 0;
+            modalBtnAddObs.disabled = true;
+        }
+
+        function updateTempObsListUI() {
+            modalObsList.innerHTML = '';
+
+            if (currentObsPointList.length === 0) {
+                modalObsList.innerHTML = '<li class="italic text-slate-500">Ninguna observación añadida.</li>';
+                return;
+            }
+
+            currentObsPointList.forEach((obs, index) => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center py-1 text-sm';
+
+                const textSpan = document.createElement('span');
+                textSpan.textContent = obs.text;
+                li.appendChild(textSpan);
+
+                const rightSide = document.createElement('div');
+                rightSide.className = 'flex items-center gap-2';
+
+                // Badge si hay nota individual
+                if (obs.note && obs.note.trim() !== '') {
+                    const noteBadge = document.createElement('span');
+                    noteBadge.className = 'text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+                    noteBadge.textContent = 'Nota';
+                    rightSide.appendChild(noteBadge);
+                }
+
+                // Badge si el multiplicador es mayor que 1
+                if (obs.multiplier && obs.multiplier > 1) {
+                    const multBadge = document.createElement('span');
+                    multBadge.className = 'text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700';
+                    multBadge.textContent = `x${obs.multiplier}`;
+                    rightSide.appendChild(multBadge);
+                }
+
+                // Indicador si ya tiene foto
+                if (obs.photoData) {
+                    const badge = document.createElement('span');
+                    badge.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700';
+                    badge.textContent = 'Foto';
+                    rightSide.appendChild(badge);
+                }
+
+                // Botón de nota individual
+                const noteBtn = document.createElement('button');
+                noteBtn.type = 'button';
+                noteBtn.className = 'btn-icon bg-amber-100 text-amber-700 hover:bg-amber-200';
+                noteBtn.title = 'Añadir nota para esta observación';
+                noteBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h8.586A2 2 0 0014 16.586L16.586 14A2 2 0 0017 12.586V5a2 2 0 00-2-2H4z" />
+                    </svg>
+                `;
+                // Al hacer clic en el icono de nota de una observación individual
+                // se abre el modal de detalle donde el usuario puede escribir
+                // un texto y especificar cuántas veces aparece la observación
+                // en la foto (multiplicador). Para mayor compatibilidad en móvil
+                // y escritorio evitamos usar la función openModal() que está
+                // diseñada para otros tipos de modales y en su lugar añadimos
+                // la clase `modal-visible` directamente.
+                noteBtn.addEventListener('click', () => {
+                    // Guardamos qué observación está siendo editada
+                    currentObsNoteIndex = index;
+                    // Prefijamos el texto existente (si lo hubiera)
+                    if (modalObsNoteDetailText) {
+                        modalObsNoteDetailText.value = obs.note || '';
+                    }
+                    // Prefijamos el multiplicador existente (o 1 por defecto)
+                    if (modalObsNoteDetailCount) {
+                        modalObsNoteDetailCount.value = obs.multiplier || 1;
+                    }
+                    // Mostramos el modal asignándole la clase de visibilidad
+                    if (modalObsNoteDetail) {
+                        modalObsNoteDetail.classList.add('modal-visible');
+                    }
+                });
+                rightSide.appendChild(noteBtn);
+
+                // Botón de cámara (foto individual)
+                const cameraBtn = document.createElement('button');
+                cameraBtn.type = 'button';
+                cameraBtn.className = 'btn-icon bg-slate-100 text-slate-700 hover:bg-slate-200';
+                cameraBtn.title = 'Tomar / adjuntar foto';
+
+                cameraBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 7h4l2-3h6l2 3h4v11H3V7z" />
+                        <circle cx="12" cy="13" r="3" />
+                    </svg>
+                `;
+
+                cameraBtn.addEventListener('click', () => {
+                    currentObsPhotoIndex = index;
+                    modalObsPhoto.click();
+                });
+
+                rightSide.appendChild(cameraBtn);
+                li.appendChild(rightSide);
+
+                modalObsList.appendChild(li);
+            });
+        }
+
+        
+function handlePhotoPreview(event) {
+            const file = event.target.files && event.target.files[0]
+                ? event.target.files[0]
+                : null;
+
+            // Si el usuario cancela la cámara / galería
+            if (!file) {
+                if (
+                    currentObsPhotoIndex !== null &&
+                    Array.isArray(currentObsPointList) &&
+                    currentObsPointList[currentObsPhotoIndex]
+                ) {
+                    currentObsPointList[currentObsPhotoIndex].photoData = null;
+                }
+                modalObsPhotoPreview.src = '#';
+                modalObsPhotoPreview.style.display = 'none';
+                currentObsPhotoIndex = null;
+                updateTempObsListUI();
+                return;
+            }
+
+            // Si el índice ya no es válido, salimos sin romper nada
+            if (
+                currentObsPhotoIndex === null ||
+                !Array.isArray(currentObsPointList) ||
+                !currentObsPointList[currentObsPhotoIndex]
+            ) {
+                currentObsPhotoIndex = null;
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const originalDataUrl = e.target.result;
+
+                    // Comprimir una sola vez la imagen para reducir peso en memoria / Firestore
+                    showLoading("Procesando foto...");
+                    let compressedDataUrl;
+                    try {
+                        compressedDataUrl = await compressImage(originalDataUrl, 800, 0.7);
+                    } catch (err) {
+                        console.error("No se pudo comprimir la imagen, se usará el original.", err);
+                        compressedDataUrl = originalDataUrl;
+                    }
+
+                    // Guardamos la foto comprimida asociada a la observación
+                    currentObsPointList[currentObsPhotoIndex].photoData = compressedDataUrl;
+                    currentObsPointPhoto = null; // compatibilidad con lógica anterior
+
+                    // Vista previa
+                    modalObsPhotoPreview.src = compressedDataUrl;
+                    modalObsPhotoPreview.style.display = 'block';
+
+                    updateTempObsListUI();
+                } catch (err) {
+                    console.error("Error al procesar la imagen de observación:", err);
+                    alert("Ocurrió un problema al cargar la foto. Inténtalo de nuevo.");
+                } finally {
+                    hideLoading();
+                }
+            };
+
+            reader.onerror = (err) => {
+                console.error("Error FileReader en foto de observación:", err);
+                alert("No se pudo leer la foto. Inténtalo nuevamente.");
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+function resetObsModal() {
+            modalObsPartida.selectedIndex = 0;
+            modalObsItem.innerHTML = '<option value="">Seleccione Observación...</option>';
+            modalObsItem.disabled = true;
+            modalBtnAddObs.disabled = true;
+            currentObsPointList = [];
+            currentObsPhotoIndex = null;
+            updateTempObsListUI();
+            modalObsNoteText.value = '';
+
+            modalObsPhoto.value = '';
+            currentObsPointPhoto = null;
+            modalObsPhotoPreview.src = '#';
+            modalObsPhotoPreview.style.display = 'none';
+        }
+
+        async function saveModalObs() {
+            if (currentObsPointList.length === 0) {
+                alert("Debe añadir al menos una observación a la lista.");
+                return;
+            }
+
+            // 1) Usar directamente las fotos ya comprimidas por observación (si las hay)
+            let photosByCode = currentObsPointList.map(obs => obs.photoData || null);
+
+            // 2) Para compatibilidad mantenemos 'photo' como la primera foto disponible
+            const firstPhoto = photosByCode.find(p => !!p) || null;
+
+            const newObsPoint = {
+                page: pageNum,
+                x: lastClickCoords.x,
+                y: lastClickCoords.y,
+                // Display inicialmente coincide con x/y; se podrá arrastrar posteriormente
+                displayX: lastClickCoords.x,
+                displayY: lastClickCoords.y,
+                type: 'obs',
+                codes: currentObsPointList.map(obs => obs.id),
+                fullObs: currentObsPointList.map(obs => obs.text),
+                note: modalObsNoteText.value.trim(),
+                photo: firstPhoto,
+                photosByCode: photosByCode,
+                notesByCode: currentObsPointList.map(obs => obs.note || ''),
+                multipliers: currentObsPointList.map(obs => obs.multiplier || 1)
+            };
+
+            allObservations.push(newObsPoint);
+            redrawAllObservations();
+            closeModal(modalObs);
+            saveDataToFirestore(); 
+        }
+
+        // --- Lógica Modal Nota ---
+        function saveModalNote() {
+            const text = modalNoteText.value.trim();
+            if (!text) {
+                alert("La nota no puede estar vacía.");
+                return;
+            }
+            
+            const newObs = {
+                page: pageNum,
+                x: lastClickCoords.x,
+                y: lastClickCoords.y,
+                displayX: lastClickCoords.x,
+                displayY: lastClickCoords.y,
+                type: 'note',
+                text: text,
+            };
+            
+            allObservations.push(newObs);
+            redrawAllObservations();
+            closeModal(modalNote);
+            saveDataToFirestore(); 
+        }
+        
+        // --- Lógica Modal Levantamiento ---
+        function saveModalLev() {
+            const code = modalLevCode.value.trim();
+            if (!code) {
+                alert("Debe ingresar un código.");
+                return;
+            }
+            
+            const newObs = {
+                page: pageNum,
+                x: lastClickCoords.x,
+                y: lastClickCoords.y,
+                displayX: lastClickCoords.x,
+                displayY: lastClickCoords.y,
+                type: 'lev',
+                code: code,
+            };
+            
+            allObservations.push(newObs);
+            redrawAllObservations();
+            closeModal(modalLev);
+            saveDataToFirestore(); 
+        }
+
+        function navigatePartidaPrev() {
+            if (modalObsPartida.selectedIndex > 1) { // > 1 para saltar "Seleccione Partida..."
+                modalObsPartida.selectedIndex--;
+                modalObsPartida.dispatchEvent(new Event('change')); 
+            }
+        }
+
+        function navigatePartidaNext() {
+            if (modalObsPartida.selectedIndex < modalObsPartida.options.length - 1) {
+                modalObsPartida.selectedIndex++;
+                modalObsPartida.dispatchEvent(new Event('change')); 
+            }
+        }
+
+
+        /* ********** LÓGICA DE RESUMEN ********** */
+
+        function generateSummary() {
+            let totalObs = 0;
+            let totalLevs = 0;
+            
+            const obsByPartida = {};
+            const levByCode = {};
+            const notes = [];
+            const obsWithNotesOrPhotos = [];
+
+            allObservations.forEach(obs => {
+                if (obs.type === 'obs') {
+                    const codes = Array.isArray(obs.codes) ? obs.codes : [];
+                    const multipliers = Array.isArray(obs.multipliers) ? obs.multipliers : [];
+                    const effectiveMultipliers = multipliers.length ? multipliers : codes.map(() => 1);
+                    const sumMultipliers = effectiveMultipliers.reduce((sum, v) => sum + (v || 1), 0);
+                    totalObs += sumMultipliers;
+
+                    // Identificar observaciones con notas o fotos asociadas, tanto
+                    // a nivel de punto (obs.note, obs.photo) como a nivel de
+                    // código individual (notesByCode, photosByCode). Esto se
+                    // utiliza para generar un resumen separado más adelante.
+                    const hasNoteByCode = Array.isArray(obs.notesByCode) && obs.notesByCode.some(n => n && n.trim());
+                    const hasPhotoByCode = Array.isArray(obs.photosByCode) && obs.photosByCode.some(p => !!p);
+                    if (obs.note || obs.photo || hasNoteByCode || hasPhotoByCode) {
+                        obsWithNotesOrPhotos.push(obs);
+                    }
+
+                    obs.fullObs.forEach((obsText, idx) => {
+                        const partida = findPartidaByObsText(obsText);
+                        if (!obsByPartida[partida]) {
+                            obsByPartida[partida] = {};
+                        }
+                        if (!obsByPartida[partida][obsText]) {
+                            obsByPartida[partida][obsText] = 0;
+                        }
+                        const mult = effectiveMultipliers[idx] || 1;
+                        obsByPartida[partida][obsText] += mult;
+                    });
+                    
+                } else if (obs.type === 'lev') {
+                    totalLevs++;
+                    if (!levByCode[obs.code]) levByCode[obs.code] = 0;
+                    levByCode[obs.code]++;
+                } else if (obs.type === 'note') {
+                    notes.push(obs.text);
+                }
+            });
+
+            summaryTotalObs.textContent = totalObs;
+            summaryTotalLevs.textContent = totalLevs;
+
+            // --- (1) Preparar datos para el gráfico ---
+            const partidaData = [];
+            for (const partida in obsByPartida) {
+                if (Object.hasOwnProperty.call(obsByPartida, partida)) {
+                    const items = obsByPartida[partida];
+                    const totalPartida = Object.values(items).reduce((sum, count) => sum + count, 0);
+                    const porcentaje = (totalObs > 0) ? (totalPartida / totalObs) * 100 : 0;
+                    partidaData.push({ partida: partida, porcentaje: porcentaje });
+                }
+            }
+            
+            // MEJORA PUNTO 5: Ordenar de mayor a menor incidencia
+            partidaData.sort((a, b) => b.porcentaje - a.porcentaje);
+            
+            // MEJORA PUNTO 5: Asignar letras y crear leyenda
+            const legendItems = [];
+            const chartLabels = partidaData.map((d, index) => {
+                const letter = String.fromCharCode(65 + index); // A, B, C...
+                legendItems.push(`<strong>${letter}</strong>: ${d.partida}`);
+                return letter; // El gráfico solo muestra la letra
+            });
+            const chartData = partidaData.map(d => d.porcentaje);
+            
+            // Poblar la leyenda HTML
+            const legendContainer = document.getElementById('summary-chart-legend');
+            if (legendContainer) {
+                if (legendItems.length > 0) {
+                    legendContainer.innerHTML = legendItems.join(' &nbsp; | &nbsp; ');
+                } else {
+                    legendContainer.innerHTML = 'No hay datos para el gráfico.';
+                }
+            }
+
+
+            // --- (2) Renderizar Cuadro Resumen de Observaciones ---
+            summaryObsContent.querySelector('h3').textContent = 'Cuadro Resumen de Observaciones';
+            let obsHtml = '';
+            const partidas = Object.keys(obsByPartida).sort();
+            
+            if (partidas.length === 0) {
+                 obsHtml = '<p class="text-slate-500 italic">No hay observaciones.</p>';
+            } else {
+                const obsHtmlFragments = [];
+                obsHtmlFragments.push(`<div class="overflow-x-auto border border-slate-200 rounded-lg shadow-sm">
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Partida</th>
+                                        <th>Código</th> 
+                                        <th>Observación</th>
+                                        <th>Subtotal</th>
+                                        <th>Total Partida</th>
+                                        <th>% (Item/Partida)</th>
+                                        <th>% (Partida/Total)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`);
+                
+                partidas.forEach(partida => {
+                    const items = obsByPartida[partida];
+                    const itemKeys = Object.keys(items).sort();
+                    const totalPartida = itemKeys.reduce((sum, key) => sum + items[key], 0);
+                    const porcentajePartidaGeneral = totalObs > 0 ? (totalPartida / totalObs) * 100 : 0;
+                    
+                    itemKeys.forEach((itemText, index) => {
+                        const count = items[itemText];
+                        const porcentajeItem = totalPartida > 0 ? (count / totalPartida) * 100 : 0;
+                        
+                        const obsCode = itemText.substring(0, itemText.indexOf(' - '));
+                        const obsOnlyText = itemText.substring(itemText.indexOf(' - ') + 3);
+
+                        obsHtmlFragments.push('<tr>');
+                        
+                        if (index === 0) {
+                            obsHtmlFragments.push(`<td class="align-top font-semibold text-slate-800" rowspan="${itemKeys.length}">${partida}</td>`);
+                        }
+                        
+                        obsHtmlFragments.push(`<td class="text-sm text-center font-medium">${obsCode}</td>`); 
+                        obsHtmlFragments.push(`<td class="text-sm text-slate-600">${obsOnlyText}</td>`);
+                        obsHtmlFragments.push(`<td class="text-sm text-center font-medium">${count}</td>`);
+                        
+                        if (index === 0) {
+                            obsHtmlFragments.push(`<td class="align-middle text-sm text-center font-bold text-slate-900" rowspan="${itemKeys.length}">${totalPartida}</td>`);
+                        }
+                        
+                        obsHtmlFragments.push(`<td class="text-sm text-center text-slate-600">${porcentajeItem.toFixed(1)}%</td>`);
+                        
+                        if (index === 0) {
+                            obsHtmlFragments.push(`<td class="align-middle text-sm text-center font-bold text-blue-700" rowspan="${itemKeys.length}">${porcentajePartidaGeneral.toFixed(1)}%</td>`);
+                        }
+                        
+                        obsHtmlFragments.push('</tr>');
+                    });
+                });
+
+                obsHtmlFragments.push(`</tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">Total General</td>
+                                    <td class="text-center">${totalObs}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                           </table>
+                          </div>`);
+                
+                obsHtml = obsHtmlFragments.join(''); 
+            }
+            summaryObsDetails.innerHTML = obsHtml;
+            
+
+            // --- Desglose de Fotos y Notas de Obs ---
+            if (obsWithNotesOrPhotos.length > 0) {
+                summaryObsNoteContent.classList.remove('hidden'); 
+                const notePhotoHtml = obsWithNotesOrPhotos.map((obs, index) => {
+                    // Nota (igual que antes)
+                    let noteHtml = '';
+                    if (obs.note) {
+                        noteHtml = `<p class="text-sm mt-1 bg-yellow-50 border-l-4 border-yellow-400 p-2 rounded-md"><strong>Nota:</strong> ${obs.note}</p>`;
+                    }
+
+                    // Fotos por código de observación
+                    let photosSection = '';
+                    const codes = Array.isArray(obs.codes) ? obs.codes : [];
+                    const photosByCode = Array.isArray(obs.photosByCode) ? obs.photosByCode : [];
+                    const notesByCode = Array.isArray(obs.notesByCode) ? obs.notesByCode : [];
+                    const multipliers = Array.isArray(obs.multipliers) ? obs.multipliers : [];
+
+                    if (photosByCode.length && photosByCode.some(p => !!p)) {
+                        photosSection = codes.map((code, idx) => {
+                            const photo = photosByCode[idx];
+                            if (!photo) return '';
+                            const itemNote = notesByCode[idx] || '';
+                            const mult = multipliers.length ? (multipliers[idx] || 1) : 1;
+                            return `
+                                <div class="mt-2">
+                                    <p class="text-xs font-semibold text-slate-600 mb-1">Obs Código: ${code} ${mult > 1 ? `(x${mult} en la foto)` : ''}</p>
+                                    ${itemNote ? `<p class="text-xs text-amber-700 mb-1"><strong>Nota:</strong> ${itemNote}</p>` : ''}
+                                    <img src="${photo}" alt="Foto de observación código ${code}"
+                                         class="mt-1 rounded-lg border border-slate-300 w-full h-auto max-h-48 object-contain">
+                                </div>
+                            `;
+                        }).join('');
+                    } else if (obs.photo) {
+                        // Compatibilidad con datos antiguos: una sola foto para el punto
+                        photosSection = `
+                            <div class="mt-2">
+                                <p class="text-xs font-semibold text-slate-600 mb-1">Foto asociada al punto</p>
+                                <img src="${obs.photo}" alt="Foto de observación"
+                                     class="mt-1 rounded-lg border border-slate-300 w-full h-auto max-h-48 object-contain">
+                            </div>
+                        `;
+                    }
+                    return `<div class="p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+                        <p class="font-semibold text-slate-800">Punto de Obs. #${index + 1}</p>
+                        <p class="text-xs text-slate-500 mb-2">Códigos: ${codes.join(', ')}</p>
+                        ${noteHtml}
+                        ${photosSection}
+                    </div>`;
+                }).join('');
+                summaryObsNoteDetails.innerHTML = notePhotoHtml;
+            } else {
+                summaryObsNoteContent.classList.add('hidden');
+            }
+
+            // --- Desglose por Código (Lev) ---
+            summaryLevContent.querySelector('h3').textContent = 'Desglose Total por Código (Levantamientos)';
+            let levHtml = '';
+            const codes = Object.keys(levByCode).sort();
+            if (codes.length === 0) {
+                 levHtml = '<p class="text-slate-500 italic">No hay levantamientos.</p>';
+            } else {
+                levHtml = '<ul class="list-disc pl-5 space-y-1">';
+                codes.forEach(code => {
+                    levHtml += `<li>Código <strong>${code}</strong>: ${levByCode[code]} veces</li>`;
+                });
+                levHtml += `</ul>`;
+            }
+            summaryLevDetails.innerHTML = levHtml;
+
+            // --- Listado de Notas Generales ---
+            if (notes.length > 0) {
+                summaryNoteContent.classList.remove('hidden'); 
+                summaryNoteDetails.innerHTML = notes.map(note => `<div class="p-3 border-l-4 border-yellow-400 bg-yellow-50 text-yellow-800 rounded-md shadow-sm">${note}</div>`).join('');
+            } else {
+                summaryNoteContent.classList.add('hidden');
+            }
+            
+            // --- Resumen de Pruebas Generales ---
+            const pruebas = Object.keys(pruebasGeneralesData);
+            if (pruebas.length > 0) {
+                summaryPruebasContent.classList.remove('hidden');
+                
+                const pruebasHtmlFragments = [];
+                pruebasHtmlFragments.push(`<div class="overflow-x-auto border border-slate-200 rounded-lg shadow-sm">
+                                    <table class="summary-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Prueba / Revisión</th>
+                                                <th>Resultado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`);
+                
+                pruebas.forEach(prueba => {
+                    const resultado = pruebasGeneralesData[prueba];
+                    let colorClass = 'text-slate-700';
+                    if (resultado === 'SI') colorClass = 'text-green-700 font-bold';
+                    if (resultado === 'NO') colorClass = 'text-red-700 font-bold';
+                    
+                    pruebasHtmlFragments.push(`<tr>
+                                        <td class="text-sm">${prueba}</td>
+                                        <td class="text-sm text-center ${colorClass}">${resultado}</td>
+                                    </tr>`);
+                });
+                
+                pruebasHtmlFragments.push(`</tbody></table></div>`);
+                summaryPruebasDetails.innerHTML = pruebasHtmlFragments.join('');
+            } else {
+                summaryPruebasContent.classList.add('hidden');
+            }
+            
+            // --- Gráfico ---
+            const chartContainer = document.getElementById('summary-chart-content');
+            if (partidaData.length > 0 && totalObs > 0) { 
+                chartContainer.classList.remove('hidden');
+                // MEJORA PUNTO 5: Enviar las nuevas etiquetas (A, B, C...)
+                renderSummaryChart(chartLabels, chartData);
+            } else {
+                chartContainer.classList.add('hidden');
+            }
+
+            // Añadir botones de descarga para cada sección del resumen
+            if (typeof addDownloadButtons === 'function') {
+                try {
+                    addDownloadButtons();
+                } catch (e) {
+                    console.warn('Error al añadir botones de descarga:', e);
+                }
+            }
+        }
+        
+        function findPartidaByObsText(obsText) {
+            for (const partida in DB_OBSERVACIONES) {
+                if (DB_OBSERVACIONES[partida].some(obs => obsText.includes(obs.text))) {
+                    return partida;
+                }
+            }
+            return "Partida Desconocida";
+        }
+
+        /**
+         * MEJORA PUNTO 5: Gráfico actualizado para usar letras (A, B, C...)
+         */
+        function renderSummaryChart(labels, data) {
+            const canvas = document.getElementById('summary-chart-canvas')
+            const ctx = canvas.getContext('2d');
+            
+            // Ajustar resolución del canvas para mayor nitidez
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            
+            // Destroy previous chart instance if any
+            if (summaryChartInstance) {
+                summaryChartInstance.destroy();
+            }
+
+            // Para el gráfico de tendencia no acumulada, la línea simplemente conecta
+            // los mismos valores de las barras. Utilizamos una copia de los datos originales.
+            const trendData = data.slice();
+
+            summaryChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: '% Incidencia',
+                            data: data,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderWidth: 1,
+                            barPercentage: 0.5,
+                            categoryPercentage: 0.5,
+                            borderRadius: 4,
+                            datalabels: {
+                                display: true
+                            }
+                        },
+                        {
+                            type: 'line',
+                            label: 'Tendencia',
+                            data: trendData,
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                            fill: false,
+                            yAxisID: 'y',
+                            datalabels: {
+                                display: false
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: 1.5,
+                    scales: {
+                        y: {
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Porcentaje (%)'
+                            },
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(0) + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Partidas (Ver leyenda arriba)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            formatter: function(value) {
+                                return value.toFixed(1) + '%';
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 11
+                            },
+                            color: '#1e293b'
+                        },
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    return `${label}: ${value.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        /* ********** FUNCIONES DE EXPORTACIÓN ********** */
+        
+        /**
+         * MEJORA PUNTO 4: Función reescrita para generar un .xlsx con pestañas
+         * usando la biblioteca SheetJS (window.XLSX).
+         */
+        async function downloadExcelSummary() {
+            // 0. Verificar si SheetJS (xlsx) está cargado
+            if (typeof XLSX === 'undefined') {
+                alert("Error: La biblioteca de Excel (SheetJS) no se pudo cargar. Revisa tu conexión a internet.");
+                return;
+            }
+
+            showLoading("Generando Excel con pestañas...");
+
+            // --- 1. Preparar datos de Observaciones ---
+            // Sumaremos observaciones considerando los multiplicadores (cantidades) que el
+            // usuario pudo asignar en cada punto. Esto garantiza que el Excel refleje
+            // correctamente la cantidad total de incidencias de cada observación.
+            let totalObs = 0;
+            const obsByPartida = {};
+            allObservations.forEach(obs => {
+                if (obs.type === 'obs') {
+                    const codes = Array.isArray(obs.codes) ? obs.codes : [];
+                    const multipliers = Array.isArray(obs.multipliers) ? obs.multipliers : [];
+                    const effectiveMultipliers = multipliers.length ? multipliers : codes.map(() => 1);
+                    // Recorrer cada observación individual del punto
+                    obs.fullObs.forEach((obsText, idx) => {
+                        const partida = findPartidaByObsText(obsText);
+                        if (!obsByPartida[partida]) obsByPartida[partida] = {};
+                        if (!obsByPartida[partida][obsText]) obsByPartida[partida][obsText] = 0;
+                        const mult = effectiveMultipliers[idx] || 1;
+                        obsByPartida[partida][obsText] += mult;
+                        totalObs += mult;
+                    });
+                }
+            });
+
+            const partidas = Object.keys(obsByPartida).sort();
+            const obsData = [];
+            // Encabezados
+            obsData.push(["Partida", "Código", "Observación", "Subtotal", "Total Partida", "% (Item/Partida)", "% (Partida/Total)"]);
+            
+            partidas.forEach(partida => {
+                const items = obsByPartida[partida];
+                const itemKeys = Object.keys(items).sort();
+                const totalPartida = itemKeys.reduce((sum, key) => sum + items[key], 0);
+                const porcentajePartidaGeneral = totalObs > 0 ? (totalPartida / totalObs) : 0;
+                
+                itemKeys.forEach((itemText) => {
+                    const count = items[itemText];
+                    const porcentajeItem = totalPartida > 0 ? (count / totalPartida) : 0;
+                    
+                    const obsCode = itemText.substring(0, itemText.indexOf(' - '));
+                    const obsOnlyText = itemText.substring(itemText.indexOf(' - ') + 3);
+
+                    obsData.push([
+                        partida,
+                        obsCode,
+                        obsOnlyText,
+                        count,
+                        totalPartida,
+                        porcentajeItem,
+                        porcentajePartidaGeneral
+                    ]);
+                });
+            });
+            // Fila Total
+            obsData.push(["Total General", "", "", totalObs, "", "", ""]);
+
+            // --- 2. Preparar datos de Pruebas Generales ---
+            const pruebasData = [];
+            // Encabezados
+            pruebasData.push(["Prueba / Revisión", "Resultado"]);
+            
+            const pruebas = Object.keys(pruebasGeneralesData);
+            pruebas.forEach(prueba => {
+                const resultado = pruebasGeneralesData[prueba];
+                pruebasData.push([prueba, resultado]);
+            });
+
+            // --- 3. Crear el libro de Excel (Workbook) ---
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // --- 4. Crear Pestaña 1 (Observaciones) ---
+                if (obsData.length > 1) { // >1 para asegurar que hay más que solo el encabezado
+                    const ws_obs = XLSX.utils.aoa_to_sheet(obsData);
+                    
+                    // Aplicar formato de % y número
+                    const percentFormat = "0.0%";
+                    const numberFormat = "0";
+                    const range = XLSX.utils.decode_range(ws_obs['!ref']);
+                    
+                    for (let R = range.s.r + 1; R < range.e.r; ++R) { // +1 para saltar encabezado, < .e.r para saltar total
+                        // Col D (Subtotal) y E (Total Partida) - Índices C=3, C=4
+                        let cell_D = ws_obs[XLSX.utils.encode_cell({c:3, r:R})];
+                        if(cell_D) { cell_D.t = 'n'; cell_D.z = numberFormat; }
+                        
+                        let cell_E = ws_obs[XLSX.utils.encode_cell({c:4, r:R})];
+                        if(cell_E) { cell_E.t = 'n'; cell_E.z = numberFormat; }
+                        
+                        // Col F y G (%s) - Índices C=5, C=6
+                        let cell_F = ws_obs[XLSX.utils.encode_cell({c:5, r:R})];
+                        if(cell_F) { cell_F.t = 'n'; cell_F.z = percentFormat; }
+                        
+                        let cell_G = ws_obs[XLSX.utils.encode_cell({c:6, r:R})];
+                        if(cell_G) { cell_G.t = 'n'; cell_G.z = percentFormat; }
+                    }
+                    // Formato Fila Total (Subtotal)
+                    let totalCell = ws_obs[XLSX.utils.encode_cell({c:3, r:range.e.r})];
+                    if(totalCell) { totalCell.t = 'n'; totalCell.z = numberFormat; }
+
+                    // Añadir anchos de columna
+                    ws_obs['!cols'] = [
+                        { wch: 30 }, // Partida
+                        { wch: 8 },  // Código
+                        { wch: 50 }, // Observación
+                        { wch: 10 }, // Subtotal
+                        { wch: 12 }, // Total Partida
+                        { wch: 15 }, // % Item
+                        { wch: 15 }  // % Partida
+                    ];
+                    
+                    XLSX.utils.book_append_sheet(wb, ws_obs, "Resumen de Obs");
+                }
+                
+                // --- 5. Crear Pestaña 2 (Pruebas) ---
+                if (pruebasData.length > 1) { // >1 para asegurar que hay más que solo el encabezado
+                    const ws_pruebas = XLSX.utils.aoa_to_sheet(pruebasData);
+                    ws_pruebas['!cols'] = [ { wch: 50 }, { wch: 15 } ];
+                    XLSX.utils.book_append_sheet(wb, ws_pruebas, "Pruebas Generales");
+                }
+
+                // --- 6. Añadir hoja de Cuadro y Gráfico ---
+                try {
+                    // Construir un cuadro resumen de observaciones por partida y porcentaje
+                    const summaryData = [];
+                    summaryData.push(["Partida", "Observaciones", "% Incidencia"]);
+                    // Ordenar por cantidad descendente
+                    const sortedPartidas = Object.keys(obsByPartida).sort((a, b) => {
+                        let countA = 0;
+                        let countB = 0;
+                        Object.values(obsByPartida[a]).forEach(val => countA += val);
+                        Object.values(obsByPartida[b]).forEach(val => countB += val);
+                        return countB - countA;
+                    });
+                    sortedPartidas.forEach(partida => {
+                        let count = 0;
+                        Object.values(obsByPartida[partida]).forEach(val => count += val);
+                        const perc = totalObs > 0 ? (count / totalObs) * 100 : 0;
+                        summaryData.push([partida, count, perc]);
+                    });
+                    const ws_summary = XLSX.utils.aoa_to_sheet(summaryData);
+                    ws_summary['!cols'] = [ { wch: 20 }, { wch: 15 }, { wch: 15 } ];
+                    XLSX.utils.book_append_sheet(wb, ws_summary, "Cuadro y Gráfico");
+                } catch(err) {
+                    console.warn("No se pudo añadir la hoja de Cuadro y Gráfico:", err);
+                }
+
+                // --- 7. Descargar el archivo ---
+                if (wb.SheetNames.length === 0) {
+                    alert("No hay datos para exportar.");
+                    hideLoading();
+                    return;
+                }
+
+                const fileName = `resumen_${currentDept}_${currentDate}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+            } catch (err) {
+                console.error("Error al generar Excel:", err);
+                alert("Se produjo un error al generar el archivo Excel.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function downloadPdfWithAnnotations() {
+            showLoading("Generando PDF de alta calidad...");
+            
+            try {
+                const { jsPDF } = window.jspdf;
+
+                const page = await pdfDoc.getPage(pageNum);
+                
+                const exportScale = 1.5;
+                const viewport = page.getViewport({ scale: exportScale });
+                
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = viewport.width;
+                tempCanvas.height = viewport.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                // Marcar este contexto como exportación de PDF para usar puntos ligeramente más pequeños
+                tempCtx.__forPdfSmall = true;
+                
+                const renderContext = {
+                    canvasContext: tempCtx,
+                    viewport: viewport
+                };
+                await page.render(renderContext).promise;
+                
+                const obsOnThisPage = allObservations.filter(obs => obs.page === pageNum);
+                
+                obsOnThisPage.forEach(obs => {
+                    // Usar displayX/displayY si existen (puntos movidos) o x/y originales
+                    let color, text;
+                    switch (obs.type) {
+                        case 'obs': color = currentReviewColor; text = obs.codes.join(', '); break;
+                        case 'note': color = '#F59E0B'; text = 'N'; break;
+                        case 'lev': color = '#22C55E'; text = obs.code; break;
+                    }
+                    // Puntos de visualización y originales escalados para el PDF
+                    const dispX = ((obs.displayX !== undefined ? obs.displayX : obs.x)) * exportScale;
+                    const dispY = ((obs.displayY !== undefined ? obs.displayY : obs.y)) * exportScale;
+                    const origX = obs.x * exportScale;
+                    const origY = obs.y * exportScale;
+                    // Dibujar flecha si el marcador fue movido
+                    if (dispX !== origX || dispY !== origY) {
+                        drawArrow(dispX, dispY, origX, origY, color, tempCtx, exportScale);
+                    }
+                    // Dibujar el marcador (escalado igual que el PDF)
+                    drawMark(dispX, dispY, text, color, tempCtx, exportScale);
+                });
+
+                const imgData = tempCanvas.toDataURL('image/png', 1.0);
+                
+                const pdfW = tempCanvas.width;
+                const pdfH = tempCanvas.height;
+                const orientation = pdfW > pdfH ? 'l' : 'p'; 
+                
+                const doc = new jsPDF(orientation, 'px', [pdfW, pdfH]);
+                
+                doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+                doc.save(`plano_anotado_depto_${currentDept}_pag_${pageNum}.pdf`);
+                
+            } catch (error) {
+                console.error("Error generando el PDF:", error);
+                alert("Hubo un error al generar el PDF de alta calidad.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * MEJORA PUNTO 3: Generación de PDF de Resumen más robusta.
+         * Ahora espera a que la imagen del gráfico (img.onload) se cargue
+         * antes de llamar a html2pdf.
+         */
+        
+// Descarga el cuadro resumen de observaciones como imagen PNG completa
+async function downloadSummaryObsAsImage() {
+    const container = document.getElementById('summary-obs-content');
+    if (!container || typeof html2canvas === 'undefined') {
+        alert('No se pudo encontrar el cuadro resumen o falta html2canvas.');
+        return;
+    }
+    showLoading('Generando imagen del cuadro...');
+    try {
+        const canvas = await html2canvas(container, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            windowWidth: container.scrollWidth,
+            windowHeight: container.scrollHeight
+        });
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+        const link = document.createElement('a');
+        const dept = currentDept || 'resumen';
+        link.href = dataUrl;
+        link.download = `cuadro_observaciones_${dept}.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (err) {
+        console.error('Error generando imagen del cuadro resumen:', err);
+        alert('No se pudo generar la imagen del cuadro resumen.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Descarga el gráfico de incidencias (título + leyenda + gráfico) como imagen PNG
+async function downloadSummaryChartAsImage() {
+    const container = document.getElementById('summary-chart-content');
+    if (!container || typeof html2canvas === 'undefined') {
+        alert('No se pudo encontrar el gráfico o falta html2canvas.');
+        return;
+    }
+    showLoading('Generando imagen del gráfico...');
+    try {
+        // Asegurar que la sección esté visible mientras se captura
+        const wasHidden = container.classList.contains('hidden');
+        if (wasHidden) {
+            container.classList.remove('hidden');
+        }
+
+        const canvas = await html2canvas(container, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            windowWidth: container.scrollWidth,
+            windowHeight: container.scrollHeight
+        });
+
+        if (wasHidden) {
+            container.classList.add('hidden');
+        }
+
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+        const link = document.createElement('a');
+        const dept = currentDept || 'resumen';
+        link.href = dataUrl;
+        link.download = `grafico_incidencias_${dept}.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (err) {
+        console.error('Error generando imagen del gráfico:', err);
+        alert('No se pudo generar la imagen del gráfico.');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function downloadSummaryAsPDF() {
+            showLoading('Generando PDF del Resumen...');
+            
+            const element = document.getElementById('pdf-summary-content');
+            const canvas = document.getElementById('summary-chart-canvas');
+            const img = document.getElementById('summary-chart-image');
+            const chartContainer = document.getElementById('summary-chart-content');
+
+            // 1. Preparar el gráfico
+            let chartWasVisible = !chartContainer.classList.contains('hidden');
+            if (chartWasVisible && summaryChartInstance) {
+                try {
+                    const chartDataUrl = summaryChartInstance.toBase64Image('image/png', 1.0);
+                    img.src = chartDataUrl;
+                    img.style.display = 'block';
+                    canvas.style.display = 'none';
+                } catch(e) {
+                    console.error("Error convirtiendo el gráfico a imagen:", e);
+                    chartWasVisible = false; 
+                }
+            } else {
+                chartWasVisible = false;
+            }
+
+            // 2. Crear un tag de estilo temporal para el PDF
+            const pdfStyles = `
+                <style id="pdf-temp-styles">
+                    body, main.container, #view-4-summary, #pdf-summary-content {
+                        background-color: #ffffff !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                    /* Ajustes de tipografía para el PDF */
+                    #pdf-summary-content {
+                        font-size: 9px !important;
+                        line-height: 1.25 !important;
+                    }
+                    .grid {
+                        display: block !important;
+                    }
+                    .bg-slate-100, .bg-blue-100, .bg-green-100 {
+                        border: 1px solid #eee !important;
+                        box-shadow: none !important;
+                        page-break-inside: avoid !important;
+                    }
+                    .overflow-x-auto {
+                        overflow: visible !important;
+                    }
+                    .summary-table {
+                        width: 100% !important;
+                        table-layout: auto !important;
+                        font-size: 10px;
+                        white-space: normal !important;
+                    }
+                    .summary-table th, .summary-table td {
+                        padding: 5px 8px !important;
+                        word-break: break-word;
+                    }
+                    h3, .summary-table, .prueba-item {
+                        page-break-after: auto !important;
+                        page-break-inside: avoid !important;
+                    }
+                    #summary-obs-note-details {
+                        display: block !important;
+                    }
+                    #summary-obs-note-details > div {
+                        page-break-inside: avoid !important;
+                    }
+                    #summary-chart-content {
+                        display: ${chartWasVisible ? 'block' : 'none'} !important;
+                        page-break-inside: avoid !important;
+                    }
+                    #summary-chart-image {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                    }
+                    /* Evitar saltos de página dentro de cada sección del resumen */
+                    #summary-details > div {
+                        page-break-inside: avoid !important;
+                    }
+                    #summary-obs-note-details > div {
+                        page-break-inside: avoid !important;
+                    }
+                    .summary-table {
+                        page-break-inside: avoid !important;
+                    }
+                    .prueba-item {
+                        page-break-inside: avoid !important;
+                    }
+                    /* Evitar cortes de fila en las tablas */
+                    table {
+                        page-break-inside: auto !important;
+                    }
+                    tr {
+                        page-break-inside: avoid !important;
+                        page-break-after: auto !important;
+                    }
+                </style>
+            `;
+            document.head.insertAdjacentHTML('beforeend', pdfStyles);
+
+            // 3. Opciones de html2pdf
+            const opt = {
+                margin:       0.5,
+                filename:     `resumen_${currentDept}_${currentDate}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 3, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+                // Evitar cortes abruptos y páginas en blanco utilizando pagebreak options
+                pagebreak:    { mode: ['avoid-all', 'css'] }
+            };
+
+            // 4. Generar PDF
+            try {
+                // NUEVO: Promesa para asegurar que la imagen del gráfico cargue
+                const waitForChartImage = new Promise((resolve, reject) => {
+                    if (!chartWasVisible) {
+                        resolve(); // No hay gráfico, continuar
+                        return;
+                    }
+                    img.onload = () => resolve(); // Imagen cargada, continuar
+                    img.onerror = () => reject(new Error("Error al cargar la imagen del gráfico"));
+                    
+                    // Fallback por si 'onload' no se dispara
+                    setTimeout(() => resolve(), 500); 
+                });
+
+                await waitForChartImage; // Esperar a que img.onload se complete
+                
+                await html2pdf().set(opt).from(element).save();
+            } catch (err) {
+                console.error("Error al generar PDF:", err);
+                alert("Error al generar el PDF del resumen.");
+            } finally {
+                // 5. Limpiar siempre
+                hideLoading();
+                if (chartWasVisible) {
+                    img.style.display = 'none';
+                    canvas.style.display = 'block';
+                }
+                const tempStyles = document.getElementById('pdf-temp-styles');
+                if (tempStyles) {
+                    tempStyles.remove();
+                }
+            }
+
+        }
+
+        // Ahora que `downloadSummaryAsPDF` ha finalizado, exponlo en el ámbito global
+        window.downloadSummaryAsPDF = downloadSummaryAsPDF;
+
+        /**
+         * Genera un Acta de Entrega en PDF incluyendo el resumen de revisión, cuadro de observaciones,
+         * pruebas generales y gráfico de incidencia. Coloca el resumen de revisión en la parte superior.
+         */
+        
+        // Descarga la hoja completa del resumen (incluyendo gráfico de Pareto) como imagen JPG
+        function downloadFullSummarySheet() {
+            downloadSection('pdf-summary-content', 'resumen_completo');
+        }
+
+async function downloadDeliveryActa() {
+            showLoading('Generando Acta de Entrega...');
+            const element = document.getElementById('pdf-summary-content');
+            if (!element) {
+                hideLoading();
+                alert('No se encontró el contenido del resumen para generar el acta.');
+                return;
+            }
+            // Guardar estado original del título y mostrar secciones necesarias
+            const titleEl = element.querySelector('h2');
+            const originalTitle = titleEl ? titleEl.textContent : '';
+            if (titleEl) titleEl.textContent = 'Acta de Entrega';
+            // Asegurar que la sección de pruebas se muestre
+            const pruebasContainer = document.getElementById('summary-pruebas-content');
+            const pruebasWasHidden = pruebasContainer && pruebasContainer.classList.contains('hidden');
+            if (pruebasContainer) pruebasContainer.classList.remove('hidden');
+            // Preparar el gráfico como imagen
+            const chartContainer = document.getElementById('summary-chart-content');
+            const canvasChart = document.getElementById('summary-chart-canvas');
+            const imgChart = document.getElementById('summary-chart-image');
+            let chartWasVisible = chartContainer && !chartContainer.classList.contains('hidden');
+            if (summaryChartInstance) {
+                try {
+                    const chartDataUrl = summaryChartInstance.toBase64Image('image/png', 1.0);
+                    imgChart.src = chartDataUrl;
+                    imgChart.style.display = 'block';
+                    canvasChart.style.display = 'none';
+                    if (chartContainer) chartContainer.classList.remove('hidden');
+                    chartWasVisible = true;
+                } catch (e) {
+                    console.warn('No se pudo convertir el gráfico a imagen:', e);
+                    chartWasVisible = false;
+                }
+            }
+
+            try {
+                // Asegurarse de que la imagen del gráfico esté lista si existe
+                const waitForChart = new Promise((resolve) => {
+                    if (!chartWasVisible) { resolve(); return; }
+                    imgChart.onload = () => resolve();
+                    // Fallback por si onload no se dispara
+                    setTimeout(() => resolve(), 500);
+                });
+                await waitForChart;
+
+                /*
+                 * Generar el Acta de entrega capturando capturas de pantalla de
+                 * las secciones principales y ensamblándolas en un contenedor
+                 * temporal para luego convertirlo a PDF mediante html2pdf.
+                 */
+                const captureSection = async (el) => {
+                    if (!el) return null;
+                    // Usar html2canvas para capturar la sección a una imagen de alta resolución
+                    const canvas = await html2canvas(el, { scale: 3, useCORS: true, logging: false });
+                    return canvas.toDataURL('image/png');
+                };
+
+                // Seleccionar secciones a capturar
+                const headerEl = element.querySelector('.grid');
+                const obsEl = document.getElementById('summary-obs-content');
+                const pruebasEl = document.getElementById('summary-pruebas-content');
+                const chartEl = document.getElementById('summary-chart-content');
+                const images = [];
+                const headerImg = await captureSection(headerEl);
+                if (headerImg) images.push(headerImg);
+                const obsImg = await captureSection(obsEl);
+                if (obsImg) images.push(obsImg);
+                const pruebasImg = await captureSection(pruebasEl);
+                if (pruebasImg) images.push(pruebasImg);
+                const chartImg = await captureSection(chartEl);
+                if (chartImg) images.push(chartImg);
+
+                // Crear contenedor temporal para el PDF
+                const actaContainer = document.createElement('div');
+                actaContainer.id = 'pdf-acta-content';
+                actaContainer.style.padding = '20px';
+                actaContainer.style.fontSize = '12px';
+                // Título del acta
+                const titleNode = document.createElement('h2');
+                titleNode.textContent = `Acta de entrega del departamento ${currentDept || ''}`;
+                titleNode.style.textAlign = 'center';
+                titleNode.style.marginBottom = '10px';
+                actaContainer.appendChild(titleNode);
+                // Añadir cada imagen dentro de un div con salto de página excepto la última
+                images.forEach((imgData, index) => {
+                    const wrapper = document.createElement('div');
+                    // Forzar salto de página después de cada imagen excepto la última
+                    wrapper.style.pageBreakAfter = (index < images.length - 1) ? 'always' : 'auto';
+                    const img = document.createElement('img');
+                    img.src = imgData;
+                    img.style.width = '100%';
+                    img.style.display = 'block';
+                    img.style.marginBottom = '10px';
+                    wrapper.appendChild(img);
+                    actaContainer.appendChild(wrapper);
+                });
+                document.body.appendChild(actaContainer);
+                // Configuración de pdf
+                const opt = {
+                    margin: 0.5,
+                    filename: `acta_entrega_${currentDept || ''}_${currentDate || ''}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, logging: false },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css'] }
+                };
+                await html2pdf().set(opt).from(actaContainer).save();
+                // Eliminar contenedor temporal
+                actaContainer.remove();
+            } catch (err) {
+                console.error('Error al generar el Acta de Entrega:', err);
+                alert('Error al generar el PDF del Acta de Entrega.');
+            } finally {
+                // Restaurar título original
+                if (titleEl) titleEl.textContent = originalTitle;
+                // Restaurar visibilidad de pruebas
+                if (pruebasContainer && pruebasWasHidden) pruebasContainer.classList.add('hidden');
+                // Restaurar gráfico
+                if (imgChart) {
+                    imgChart.style.display = chartWasVisible ? 'none' : imgChart.style.display;
+                }
+                if (canvasChart) {
+                    canvasChart.style.display = 'block';
+                }
+                if (chartContainer && !chartWasVisible) {
+                    chartContainer.classList.add('hidden');
+                }
+                hideLoading();
+            }
+            }
+
+        // Exponer la función globalmente
+        window.downloadDeliveryActa = downloadDeliveryActa;
+
+        /**
+         * Descarga una sección individual del resumen como PDF.
+         * @param {string} sectionId - ID del contenedor de la sección a exportar.
+         * @param {string} filenamePrefix - Prefijo para el archivo generado.
+         */
+        async function downloadSection(sectionId, filenamePrefix) {
+            // Si la sección a exportar es la del detalle de Fotos y Notas de Observación,
+            // generamos una imagen individual por cada tarjeta (foto+nota) en lugar de
+            // intentar capturar todo el contenedor a la vez. Esto evita que html2canvas
+            // produzca una salida negra y reduce la carga de memoria.
+            if (sectionId === 'summary-obs-note-content') {
+                showLoading('Generando imágenes (JPG)...');
+                try {
+                    await downloadObsNoteCardsIndividually(filenamePrefix);
+                } catch (err) {
+                    console.error('Error al descargar tarjetas de fotos y notas:', err);
+                    alert('Ocurrió un error al generar las imágenes.');
+                } finally {
+                    hideLoading();
+                }
+                return;
+            }
+
+            showLoading('Generando imagen (JPG)...');
+            try {
+                const original = document.getElementById(sectionId);
+                if (!original) {
+                    hideLoading();
+                    alert('No se encontró la sección: ' + sectionId);
+                    return;
+                }
+
+                if (typeof html2canvas === 'undefined') {
+                    hideLoading();
+                    alert('html2canvas no está disponible.');
+                    return;
+                }
+
+                // 1) Clonar la sección
+                const clone = original.cloneNode(true);
+                clone.style.position = 'absolute';
+                clone.style.left = '-99999px';
+                clone.style.top = '0';
+                clone.style.margin = '0';
+                clone.style.padding = '16px';
+                clone.style.backgroundColor = '#ffffff';
+                clone.style.boxShadow = 'none';
+                clone.style.borderRadius = '0';
+
+                // 2) Forzar que no haya recortes en el clon
+                const walker = document.createTreeWalker(
+                    clone,
+                    NodeFilter.SHOW_ELEMENT,
+                    null,
+                    false
+                );
+
+                while (walker.nextNode()) {
+                    const el = walker.currentNode;
+                    const style = el.style;
+                    const computed = window.getComputedStyle(el);
+
+                    if (computed.overflow !== 'visible') {
+                        style.overflow = 'visible';
+                    }
+                    if (computed.overflowX !== 'visible') {
+                        style.overflowX = 'visible';
+                    }
+                    if (computed.overflowY !== 'visible') {
+                        style.overflowY = 'visible';
+                    }
+
+                    style.maxHeight = 'none';
+                    if (computed.height !== 'auto') {
+                        style.height = 'auto';
+                    }
+                }
+
+                // Asegurar ancho completo para tablas de resumen
+                const tables = clone.querySelectorAll('.summary-table');
+                tables.forEach(tbl => {
+                    tbl.style.width = '100%';
+                    tbl.style.tableLayout = 'auto';
+                });
+
+                document.body.appendChild(clone);
+
+                // 3) Si la sección tiene el gráfico de Pareto, reemplazar el canvas con una imagen de mayor resolución
+                try {
+                    const originalChartCanvas = document.getElementById('summary-chart-canvas');
+                    const cloneChartCanvas = clone.querySelector('#summary-chart-canvas');
+                    if (cloneChartCanvas && originalChartCanvas && typeof summaryChartInstance !== 'undefined' && summaryChartInstance) {
+                        // ——— Ajuste de tamaño + márgenes solo en exportación ———
+                        // Tamaño reducido del gráfico
+                        const scaleUp = 1.0;
+                        // Márgenes en blanco laterales (25% del ancho original a cada lado)
+                        const marginX = originalChartCanvas.width * 0.07;
+                        // Crear canvas temporal con márgenes horizontales
+                        const tmpCanvas = document.createElement('canvas');
+                        tmpCanvas.width  = (originalChartCanvas.width * scaleUp) + (marginX * 2);
+                        tmpCanvas.height = (originalChartCanvas.height * scaleUp);
+                        const tmpCtx = tmpCanvas.getContext('2d');
+                        // Fondo blanco completo
+                        tmpCtx.fillStyle = '#ffffff';
+                        tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+                        // Dibujar el gráfico centrado horizontalmente gracias a los márgenes
+                        tmpCtx.drawImage(
+                            originalChartCanvas,
+                            marginX,
+                            0,
+                            originalChartCanvas.width * scaleUp,
+                            originalChartCanvas.height * scaleUp
+                        );
+                        const chartDataUrl = tmpCanvas.toDataURL('image/png', 1.0);
+
+                        const img = document.createElement('img');
+                        img.src = chartDataUrl;
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+
+                        cloneChartCanvas.replaceWith(img);
+                    }
+                } catch (e) {
+                    console.warn('No se pudo preparar la imagen del gráfico para la descarga:', e);
+                }
+
+
+                const width = clone.scrollWidth;
+                const height = clone.scrollHeight;
+
+                const canvas = await html2canvas(clone, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    windowWidth: width,
+                    windowHeight: height,
+                    scrollX: 0,
+                    scrollY: 0
+                });
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                const link = document.createElement('a');
+                const dept = (window.currentDept || 'resumen').toString().replace(/\s+/g, '_');
+                const date = (window.currentDate || '').toString().replace(/[^\d\-]/g, '_');
+                link.href = dataUrl;
+                link.download = `${filenamePrefix}_${dept}_${date}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                clone.remove();
+            } catch (err) {
+                console.error('Error al descargar la sección como imagen:', err);
+                alert('Ocurrió un error al generar la imagen.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Añade botones de descarga a las secciones del resumen.
+         * Cada botón permite exportar individualmente la sección a un PDF.
+         */
+        /**
+         * Descarga individualmente cada tarjeta de la sección Detalle de Fotos y Notas
+         * de Observación como una imagen JPEG separada. Esto evita que html2canvas
+         * genere una captura negra al intentar renderizar todo el contenedor a la vez.
+         *
+         * @param {string} filenamePrefix - Prefijo a utilizar en los nombres de archivo.
+         */
+        async function downloadObsNoteCardsIndividually(filenamePrefix) {
+            const container = document.getElementById('summary-obs-note-details');
+            if (!container) return;
+            const cards = Array.from(container.children).filter(el => el.nodeType === 1);
+            if (!cards.length) return;
+            const dept = (window.currentDept || 'resumen').toString().replace(/\s+/g, '_');
+            const date = (window.currentDate || '').toString().replace(/[^\d\-]/g, '_');
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'absolute';
+                wrapper.style.left = '-99999px';
+                wrapper.style.top = '0';
+                wrapper.style.margin = '0';
+                wrapper.style.padding = '16px';
+                wrapper.style.backgroundColor = '#ffffff';
+                wrapper.style.boxShadow = 'none';
+                wrapper.style.borderRadius = '0';
+                const cardClone = card.cloneNode(true);
+                wrapper.appendChild(cardClone);
+                document.body.appendChild(wrapper);
+                const width = wrapper.scrollWidth;
+                const height = wrapper.scrollHeight;
+                const canvas = await html2canvas(wrapper, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    windowWidth: width,
+                    windowHeight: height,
+                    scrollX: 0,
+                    scrollY: 0
+                });
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `${filenamePrefix}_${dept}_${date}_parte_${i + 1}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                wrapper.remove();
+            }
+        }
+
+        function addDownloadButtons() {
+            const sections = [
+                { id: 'summary-obs-content',      filename: 'resumen_observaciones' },
+                { id: 'summary-obs-note-content', filename: 'detalle_fotos_notas' },
+                { id: 'summary-lev-content',      filename: 'resumen_levantamientos' },
+                { id: 'summary-note-content',     filename: 'listado_notas' },
+                { id: 'summary-pruebas-content',  filename: 'resumen_pruebas' },
+                // Botón del gráfico: sólo descarga leyenda + gráfico de Pareto
+                { id: 'summary-chart-content',    filename: 'grafico_incidencia', targetId: 'summary-chart-content' },
+            ];
+            sections.forEach(item => {
+                const section = document.getElementById(item.id);
+                if (!section) return;
+                if (section.classList.contains('hidden')) return;
+                const header = section.querySelector('h3');
+                if (!header) return;
+                if (header.querySelector('.download-section-button')) return;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'download-section-button inline-flex items-center justify-center ml-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 text-xs px-2 py-1';
+                btn.setAttribute('title', 'Descargar sección');
+                btn.innerHTML = '↓';
+
+                const targetId = item.targetId || item.id;
+                btn.addEventListener('click', () => downloadSection(targetId, item.filename));
+                header.appendChild(btn);
+            });
+        }
+        
+        /* ********** UTILIDADES ********** */
+
+        function compressImage(base64Str, maxWidth = 800, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = base64Str;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width <= maxWidth) {
+                        height = img.height;
+                        width = img.width;
+                    } else {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedBase64);
+                };
+                img.onerror = (err) => {
+                    console.error("Error al cargar imagen para comprimir", err);
+                    reject(err);
+                };
+            });
+        }
+        
+        // MEJORA PUNTO 6: Esta función ya no se usa, pero se deja por si acaso.
+        function showPrintMessage() {
+            const helper = document.getElementById('print-helper-message');
+            if (helper) {
+                helper.classList.remove('hidden');
+                setTimeout(() => {
+                    helper.classList.add('hidden');
+                }, 5000);
+            }
+        }
+        window.showPrintMessage = showPrintMessage; // Exponerla globalmente
+        
+        function showLoading(text) {
+            loadingText.textContent = text || "Cargando...";
+            loadingSpinner.classList.add('modal-visible');
+        }
+        
+        function hideLoading() {
+            loadingSpinner.classList.remove('modal-visible');
+        }
+        
+        function startNewReview() {
+            // Confirmar antes de salir y resetear todo
+            const confirmExit = confirm('¿Deseas salir sin guardar? Se perderán los cambios no guardados.');
+            if (!confirmExit) {
+                return;
+            }
+
+            // Si el usuario acepta, desactivar advertencia para permitir el cambio de vista
+            exitWarningEnabled = false;
+
+            // Resetear variables de estado
+            pdfDoc = null;
+            pageNum = 1;
+            scale = 1.0;
+            currentReviewColor = '#FF0000';
+            currentReviewType = '';
+            currentDept = '';
+            currentDate = '';
+            allObservations = [];
+            pruebasGeneralesData = {};
+            currentTool = null;
+            dataLoaded = false; 
+
+            // Resetear UI Vista 1
+            deptNumberInput.value = '';
+            reviewDate.value = '';
+            reviewType.selectedIndex = 0;
+
+            // Resetear UI Vista 2
+            loSubtype.selectedIndex = 0;
+            loSubtypeContainer.classList.add('hidden');
+            startReviewBtn.disabled = true;
+
+            // Resetear UI Vista 3 (info)
+            if (infoDept) infoDept.textContent = '---';
+            if (infoDate) infoDate.textContent = '---';
+            if (infoReviewType) infoReviewType.textContent = '---';
+            pageNumSpan.textContent = '0';
+            pageCountSpan.textContent = '0';
+            zoomPercentSpan.textContent = '100%';
+            if(ctx) {
+                ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            }
+
+            // Resetear UI Vista 5 (Resumen) 
+            summaryDept.textContent = '---';
+            summaryDate.textContent = '---';
+            summaryReviewType.textContent = '---';
+            summaryTotalObs.textContent = '0';
+            summaryTotalLevs.textContent = '0';
+            summaryObsDetails.innerHTML = '';
+            summaryLevDetails.innerHTML = '';
+            summaryNoteDetails.innerHTML = '';
+            summaryObsNoteDetails.innerHTML = '';
+            summaryPruebasDetails.innerHTML = '';
+            if(summaryChartInstance) {
+                summaryChartInstance.destroy();
+                summaryChartInstance = null;
+            }
+
+            showView('view-1-config');
+
+            dataLoaded = true; 
+            saveDataToFirestore();
+        }        
+    
+    // Toggle de modo oscuro/claro
+    (function() {
+      const btn = document.getElementById('theme-toggle');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark-mode');
+      });
+    })();
+    // Manejo global de errores para evitar la “pantalla blanca” en móviles
+    (function () {
+      if (window.__fatalOverlayInstalled) return;
+      window.__fatalOverlayInstalled = true;
+
+      function showFatalError(message) {
+        try {
+          let overlay = document.getElementById('fatal-error-overlay');
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'fatal-error-overlay';
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = '#ffffff';
+            overlay.style.zIndex = '9999';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.padding = '16px';
+            overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+            overlay.innerHTML = `
+              <h2 style="font-size:18px;margin-bottom:8px;color:#111827;">Se produjo un error en la aplicación</h2>
+              <p id="fatal-error-message" style="font-size:14px;color:#4b5563;text-align:center;max-width:320px;"></p>
+              <button type="button"
+                      style="margin-top:16px;padding:10px 20px;border-radius:9999px;border:none;background:#0f766e;color:white;font-size:14px;">
+                Reintentar
+              </button>
+            `;
+            document.body.appendChild(overlay);
+            const btn = overlay.querySelector('button');
+            if (btn) {
+              btn.addEventListener('click', () => {
+                location.reload();
+              });
+            }
+          }
+          const msgNode = document.getElementById('fatal-error-message');
+          if (msgNode) msgNode.textContent = message;
+        } catch (e) {
+          console.error('No se pudo mostrar overlay de error:', e);
+        }
+      }
+
+      function shouldShowOnThisDevice() {
+        return window.innerWidth <= 768; // prioritariamente móviles
+      }
+
+      window.addEventListener('error', function (e) {
+        console.error('[GlobalError]', e.error || e.message);
+        if (shouldShowOnThisDevice()) {
+          showFatalError('Ocurrió un problema cargando la aplicación. Pulsa “Reintentar” para volver a intentarlo.');
+        }
+      });
+
+      window.addEventListener('unhandledrejection', function (e) {
+        console.error('[UnhandledRejection]', e.reason);
+        if (shouldShowOnThisDevice()) {
+          showFatalError('Se produjo un error de conexión o datos. Pulsa “Reintentar” para volver a intentarlo.');
+        }
+      });
+    })();
+
+</script>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

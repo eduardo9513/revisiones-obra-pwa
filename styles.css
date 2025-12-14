@@ -1,0 +1,817 @@
+/* --- ESTILOS PERSONALIZADOS --- */
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    overflow: auto;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    max-height: 75vh;
+    touch-action: none;
+    display: grid;
+    border-radius: 0.75rem;
+    -webkit-touch-callout: none;
+    will-change: scroll-position;
+    /* MEJORA DE FLUIDEZ */
+}
+
+#pdf-canvas,
+#draw-canvas {
+    grid-area: 1 / 1;
+    position: relative;
+    touch-action: none;
+}
+
+#draw-canvas {
+    z-index: 10;
+    cursor: default;
+}
+
+/* --- Transiciones de Vistas --- */
+.view-container {
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out, max-height 0.4s ease-in-out, margin 0.4s, padding 0.4s;
+    transform: translateY(0);
+    opacity: 1;
+    max-height: 10000px;
+    overflow: visible;
+    will-change: transform, opacity, max-height;
+    /* MEJORA DE FLUIDEZ */
+}
+
+.view-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* --- Transiciones de Modales --- */
+.modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    background-color: rgba(15, 23, 42, 0.6);
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.modal-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 24px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    will-change: transform, opacity;
+    /* MEJORA DE FLUIDEZ */
+}
+
+.modal.modal-visible .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+/* Menú Contextual */
+#context-menu {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: none;
+    width: 220px;
+    overflow: hidden;
+}
+
+#context-menu button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+#context-menu button:hover {
+    background-color: #f8fafc;
+}
+
+#context-menu button:last-child {
+    border-bottom: none;
+}
+
+#context-menu button svg {
+    margin-right: 12px;
+}
+
+/* Vista previa de foto */
+#modalObsPhotoPreview {
+    max-width: 100%;
+    max-height: 150px;
+    margin-top: 10px;
+    border-radius: 0.5rem;
+    border: 1px solid #cbd5e1;
+    display: none;
+}
+
+/* Tabla de Resumen */
+.summary-table {
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+    border: 1px solid #e2e8f0;
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.summary-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+}
+
+.summary-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.summary-table tfoot {
+    font-weight: 700;
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.summary-table td.align-top {
+    vertical-align: top;
+}
+
+.summary-table td.text-center {
+    text-align: center;
+}
+
+.summary-table td.font-bold {
+    font-weight: 600;
+}
+
+.summary-table td.font-semibold {
+    font-weight: 500;
+}
+
+/* Estilos para los inputs y botones (redefinidos más abajo con CSS estándar) */
+
+/* --- Estilos para impresión --- */
+@media print {
+
+    /* Ocultar toda la interfaz excepto la vista de resumen */
+    body * {
+        visibility: hidden !important;
+    }
+
+    #view-4-summary,
+    #view-4-summary * {
+        visibility: visible !important;
+    }
+
+    #view-4-summary {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Ajustar tamaños de fuente y columnas para impresión */
+    #view-4-summary .summary-table th,
+    #view-4-summary .summary-table td {
+        font-size: 10px !important;
+        padding: 6px 8px !important;
+    }
+
+    #view-4-summary .summary-table {
+        border-collapse: collapse !important;
+    }
+
+    #view-4-summary h2,
+    #view-4-summary h3 {
+        font-size: 16px !important;
+        margin-top: 0 !important;
+        margin-bottom: 8px !important;
+    }
+}
+
+.file-input {
+    width: 100%;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+/* Estilo del botón de selección de archivos */
+.file-input::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    background-color: #eff6ff;
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.file-input::file-selector-button:hover {
+    background-color: #dbeafe;
+}
+
+/* --- Navegación del PDF --- */
+#prev-page,
+#next-page,
+#zoom-out,
+#zoom-in {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    font-size: 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#prev-page:hover,
+#next-page:hover,
+#zoom-out:hover,
+#zoom-in:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+#prev-page:active,
+#next-page:active,
+#zoom-out:active,
+#zoom-in:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#prev-page:disabled,
+#next-page:disabled,
+#zoom-out:disabled,
+#zoom-in:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Botones de navegación dentro de modales (anterior/siguiente) */
+#modal-partida-prev,
+#modal-partida-next {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: #e2e8f0;
+    color: #334155;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+#modal-partida-prev:hover,
+#modal-partida-next:hover {
+    background-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+#modal-partida-prev:active,
+#modal-partida-next:active {
+    transform: translateY(0);
+}
+
+/* Botones de acciones finales en modales */
+#modal-btn-add-obs,
+#modal-obs-save,
+#modal-note-save,
+#modal-lev-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+#modal-btn-add-obs {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+#modal-btn-add-obs:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+#modal-btn-add-obs:active {
+    transform: translateY(0);
+}
+
+#modal-obs-save {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+#modal-obs-save:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+#modal-note-save {
+    background-color: #eab308;
+    color: #ffffff;
+}
+
+#modal-note-save:hover {
+    background-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+#modal-lev-save {
+    background-color: #22c55e;
+    color: #ffffff;
+}
+
+#modal-lev-save:hover {
+    background-color: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+#modal-btn-add-obs:disabled,
+#modal-obs-save:disabled,
+#modal-note-save:disabled,
+#modal-lev-save:disabled {
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* === Utilidades de diseño (fallback para clases de Tailwind) === */
+/* Espaciados verticales */
+.space-y-4>*+* {
+    margin-top: 1rem;
+}
+
+/* Grids */
+.grid {
+    display: grid;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.gap-6 {
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .md\:grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .md\:col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Flex utilities */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+/* Responsive flex direction */
+@media (min-width: 768px) {
+    .md\:flex-row {
+        flex-direction: row;
+    }
+
+    .md\:items-center {
+        align-items: center;
+    }
+}
+
+/* Margins between elements horizontally */
+.space-x-2>*+* {
+    margin-left: 0.5rem;
+}
+
+.space-x-4>*+* {
+    margin-left: 1rem;
+}
+
+
+/* Estilos para la lista de Pruebas Generales */
+.prueba-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.75rem;
+}
+
+.prueba-item label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1e293b;
+    flex: 1;
+}
+
+.prueba-item .options {
+    display: flex;
+    flex-shrink: 0;
+    gap: 1rem;
+    margin-left: 1rem;
+}
+
+.prueba-item .options label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/*
+         * Fallback design: define base styles for layout and components to ensure
+         * the application remains visually appealing even if external CSS frameworks
+         * like Tailwind are unavailable. These styles give a clean, modern look
+         * to the page, with soft backgrounds, card-like containers and clearly
+         * distinguished buttons.
+         */
+body {
+    /* Color base claro para todo el fondo de la aplicación */
+    background-color: #f5f7fb;
+    font-family: 'Inter', sans-serif;
+    /* Texto más oscuro para un contraste suave */
+    color: #1e293b;
+}
+
+header {
+    /* Encabezado con tono oscuro y sombra sutil */
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.view-container {
+    /* Contenedor de cada vista con fondo blanco, mayor sombra y bordes redondeados */
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    margin-top: 1.5rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.4rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-secondary {
+    background-color: #475569;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #334155;
+}
+
+.btn-success {
+    background-color: #22c55e;
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: #16a34a;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-warning {
+    background-color: #eab308;
+    color: #ffffff;
+}
+
+.btn-warning:hover {
+    background-color: #d97706;
+}
+
+/* Estado deshabilitado para los botones personalizados */
+button.btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.25rem;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background-color: #f9fafb;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.prueba-item .options label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+/* Estilos de Impresión (para Ctrl+P) */
+@media print {
+    body>* {
+        display: none !important;
+    }
+
+    main.container,
+    #view-4-summary,
+    #view-4-summary * {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    main.container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #view-4-summary {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    header,
+    #view-1-config,
+    #view-2-setup,
+    #view-3-review,
+    #view-5-pruebas,
+    #view-4-summary .mt-8,
+    /* Ocultar botones de exportar */
+    #view-4-summary .mt-6,
+    /* Ocultar botón "Volver" */
+    #cloud-status {
+        display: none !important;
+    }
+
+    .summary-table,
+    .overflow-x-auto {
+        overflow: visible !important;
+    }
+
+    #summary-obs-note-details {
+        display: block !important;
+        /* Quitar grid */
+    }
+
+    #summary-obs-note-details>div,
+    .prueba-item,
+    #summary-chart-content {
+        /* MEJORA: Asegurar que el gráfico se imprima */
+        page-break-inside: avoid !important;
+    }
+
+    /* MEJORA PUNTO 3: Ocultar canvas y mostrar solo imagen para imprimir */
+    #summary-chart-canvas {
+        display: none !important;
+    }
+
+    #summary-chart-image {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Evitar cortes de fila en impresión */
+    table {
+        page-break-inside: auto !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+    }
+}
+
+/* === Mejora Mobile First: áreas táctiles más cómodas === */
+@media (max-width: 640px) {
+
+    .btn,
+    button[type="button"],
+    button[type="submit"] {
+        min-height: 44px;
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="search"],
+    select,
+    textarea {
+        min-height: 44px;
+        font-size: 0.95rem;
+    }
+
+    .canvas-container {
+        max-height: 70vh;
+    }
+}
