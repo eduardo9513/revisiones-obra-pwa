@@ -69,4 +69,32 @@ window.firebase = {
 console.log('[Firebase] Módulos cargados y expuestos en window.firebase');
 window.dispatchEvent(new Event('firebase-ready'));
 
+// Función para inicializar la app
+function initApp() {
+  // Ocultar todas las vistas
+  const views = document.querySelectorAll('[class*="view-"]');
+  views.forEach(view => {
+    view.classList.add('view-hidden');
+  });
+
+  // Mostrar solo la vista de inicio
+  const homeView = document.getElementById('view-0-home');
+  if (homeView) {
+    homeView.classList.remove('view-hidden');
+  }
+
+  // Inicializar listeners de botones
+  const buttons = document.querySelectorAll('button[data-action]');
+  buttons.forEach(button => {
+    button.addEventListener('click', handleButtonClick);
+  });
+}
+
+// Llamar a initApp cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
 
